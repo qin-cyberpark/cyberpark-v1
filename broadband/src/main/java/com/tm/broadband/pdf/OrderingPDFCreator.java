@@ -34,8 +34,6 @@ public class OrderingPDFCreator extends ITextUtils {
 	
 	private BaseColor titleBGColor = new BaseColor(220,221,221);
 	private BaseColor titleBorderColor = new BaseColor(159,159,159);
-	
-	private String pdf_resources_path = TMUtils.createPath("broadband" + File.separator + "pdf_resources" + File.separator);
 
 	// BEGIN Temporary Variables
 	// BEGIN Currency Related Variables
@@ -121,13 +119,7 @@ public class OrderingPDFCreator extends ITextUtils {
         document.open();
         
     	// company_logo
-        File companyLogoFile = new File(pdf_resources_path + "common_company_logo.png");
-		if(companyLogoFile.exists()){
-	    	addImage(writer, pdf_resources_path + "common_company_logo.png", 108.75F, 51.00000000000001F, 32F, 772F);
-        } else {
-	    	addImage(writer, "pdf"+File.separator+"img"+File.separator+"company_logo.png", 108.75F, 51.00000000000001F, 32F, 772F);
-        }
-        
+    	addImage(writer, "pdf"+File.separator+"img"+File.separator+"company_logo.png", 108.75F, 51.00000000000001F, 32F, 772F);
     	
         setGlobalBorderWidth(0);
     	
@@ -161,12 +153,7 @@ public class OrderingPDFCreator extends ITextUtils {
 		addText(writer, "Print from www.cyberpark.co.nz", ITextFont.arial_normal_8, 190F, 26F);
 		addText(writer, "0800 2 CYBER (29237)", ITextFont.arial_normal_8, 360F, 26F);
     	// two-dimensional_code
-        File twoDimensionalCodeFile = new File(pdf_resources_path + "two_dimensional_code.png");
-		if(twoDimensionalCodeFile.exists()){
-	    	addImage(writer, pdf_resources_path + "two_dimensional_code.png", 82.50000000000001F, 82.50000000000001F, 486F, 24F);
-        } else {
-        	addImage(writer, "pdf"+File.separator+"img"+File.separator+"two-dimensional_code.png", 82.50000000000001F, 82.50000000000001F, 486F, 24F);
-        }
+    	addImage(writer, "pdf"+File.separator+"img"+File.separator+"two-dimensional_code.png", 82.50000000000001F, 82.50000000000001F, 486F, 24F);
         
 		// CLOSE DOCUMENT
         document.close();

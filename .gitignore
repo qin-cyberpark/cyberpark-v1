@@ -1,0 +1,19 @@
+###############
+#    ignore   #
+###############
+###############
+#    global   #
+###############
+RemoteSystemsTempFiles/
+.metadata/
+.recommenders/
+deployment/
+Servers/
+###############
+#    project  #
+###############
+braodband/.settings/
+braodband/target/
+braodband/.classpath/
+braodband/project/
+braodband/.springBeans/

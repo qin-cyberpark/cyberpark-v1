@@ -1,297 +1,212 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
-	http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-
-	<!-- <login-config> <auth-method>CLIENT-CERT</auth-method> <realm-name>Client 
-		Cert Users-only Area </realm-name> </login-config> <security-constraint> 
-		<web-resource-collection> <web-resource-name>SSL</web-resource-name> <url-pattern>/</url-pattern> 
-		</web-resource-collection> <user-data-constraint> <transport-guarantee>CONFIDENTIAL</transport-guarantee> 
-		</user-data-constraint> </security-constraint> -->
-
-	<welcome-file-list>
-		<welcome-file></welcome-file>
-	</welcome-file-list>
-
-	<servlet-mapping>
-		<servlet-name>default</servlet-name>
-		<url-pattern>*.js</url-pattern>
-		<url-pattern>*.css</url-pattern>
-		<url-pattern>*.png</url-pattern>
-		<url-pattern>*.gif</url-pattern>
-		<url-pattern>*.jpg</url-pattern>
-		<url-pattern>*.bpm</url-pattern>
-		<url-pattern>*.map</url-pattern>
-		<url-pattern>*.html</url-pattern>
-		<url-pattern>*.eot</url-pattern>
-		<url-pattern>*.svg</url-pattern>
-		<url-pattern>*.ttf</url-pattern>
-		<url-pattern>*.woff</url-pattern>
-		<url-pattern>*.txt</url-pattern>
-		<url-pattern>*.xml</url-pattern>
-	</servlet-mapping>
-
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath:spring/application-config.xml</param-value>
-	</context-param>
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener>
-
-	<!-- spring mvc -->
-	<servlet>
-		<servlet-name>dispatcherServlet</servlet-name>
-		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-		<init-param>
-			<param-name>contextConfigLocation</param-name>
-			<param-value>/WEB-INF/mvc-config.xml</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>dispatcherServlet</servlet-name>
-		<url-pattern>/</url-pattern>
-	</servlet-mapping>
-
-	<!-- kaptcha -->
-	<servlet>
-		<servlet-name>Kaptcha</servlet-name>
-		<servlet-class>com.google.code.kaptcha.servlet.KaptchaServlet</servlet-class>
-		<init-param>
-			<param-name>kaptcha.image.width</param-name>
-			<param-value>140</param-value>
-		</init-param>
-		<init-param>
-			<param-name>kaptcha.image.height</param-name>
-			<param-value>54</param-value>
-		</init-param>
-		<init-param>
-			<param-name>kaptcha.textproducer.char.length</param-name>
-			<param-value>4</param-value>
-		</init-param>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Kaptcha</servlet-name>
-		<url-pattern>/kaptcha.jpg</url-pattern>
-	</servlet-mapping>
-
-	<!-- spring ws -->
-	<servlet>
-		<servlet-name>spring-ws</servlet-name>
-		<servlet-class>org.springframework.ws.transport.http.MessageDispatcherServlet</servlet-class>
-		<init-param>
-			<param-name>transformWsdlLocations</param-name>
-			<param-value>true</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>spring-ws</servlet-name>
-		<url-pattern>/services/*</url-pattern>
-	</servlet-mapping>
-
-	<!-- session time -->
-	<session-config>
-		<session-timeout>180</session-timeout>
-	</session-config>
-
-	<!-- filter Character Encoding -->
-	<filter>
-		<filter-name>encodingFilter</filter-name>
-		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
-		<init-param>
-			<param-name>encoding</param-name>
-			<param-value>UTF-8</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>encodingFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-	
-	<!-- customerReg filter -->
-	<filter>
-		<filter-name>CustomerRegFilter</filter-name>
-		<filter-class>com.tm.broadband.filter.CustomerRegFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>CustomerRegFilter</filter-name>
-		<url-pattern>/plans/address-check/*</url-pattern>
-		<url-pattern>/plans/order</url-pattern>
-		<url-pattern>/plans/address/clear</url-pattern>
-		<url-pattern>/plans/order/summary</url-pattern>
-		<url-pattern>/plans/order/bankdeposit</url-pattern>
-		<url-pattern>/plans/order/dps</url-pattern>
-	</filter-mapping>
-
-	<!-- customer session filter -->
-	<filter>
-		<filter-name>CustomerSessionFilter</filter-name>
-		<filter-class>com.tm.broadband.filter.CustomerSessionFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>CustomerSessionFilter</filter-name>
-		<url-pattern>/customer/home</url-pattern>
-		<url-pattern>/customer/orders/*</url-pattern>
-		<url-pattern>/customer/new-order/*</url-pattern>
-		<url-pattern>/customer/change-password</url-pattern>
-		
-		<url-pattern>/customer/topup</url-pattern>
-		<url-pattern>/customer/topup/checkout</url-pattern>
-		<url-pattern>/customer/ordering-form/checkout</url-pattern>
-		<url-pattern>/customer/topup-plan</url-pattern>
-		<url-pattern>/customer/topup-plan/checkout</url-pattern>
-		<url-pattern>/customer/invoice/checkout</url-pattern>
-		
-	</filter-mapping>
-
-	<!-- user session filter -->
-	<filter>
-		<filter-name>UserSessionFilter</filter-name>
-		<filter-class>com.tm.broadband.filter.UserSessionFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>UserSessionFilter</filter-name>
-		<url-pattern>/broadband-user/index</url-pattern>
-		<url-pattern>/broadband-user/plan/*</url-pattern>
-		<url-pattern>/broadband-user/crm/*</url-pattern>
-		<url-pattern>/broadband-user/billing/*</url-pattern>
-		<url-pattern>/broadband-user/provision/*</url-pattern>
-		<url-pattern>/broadband-user/data/*</url-pattern>
-		<url-pattern>/broadband-user/system/*</url-pattern>
-		<url-pattern>/broadband-user/sale/*</url-pattern>
-		<url-pattern>/broadband-user/manual-manipulation/*</url-pattern>
-		<url-pattern>/broadband-user/inventory/*</url-pattern>
-	</filter-mapping>
-
-	<!-- user auth filter -->
-	<filter>
-		<filter-name>UserAuthFilter</filter-name>
-		<filter-class>com.tm.broadband.filter.UserAuthFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>UserAuthFilter</filter-name>
-
-		<!-- Plan Module BEGIN -->
-		<url-pattern>/broadband-user/plan/view/*</url-pattern>
-		<url-pattern>/broadband-user/plan/create</url-pattern>
-		<url-pattern>/broadband-user/plan/edit/*</url-pattern>
-		<url-pattern>/broadband-user/plan/hardware/view/*</url-pattern>
-		<url-pattern>/broadband-user/plan/hardware/create</url-pattern>
-		<url-pattern>/broadband-user/plan/hardware/edit/*</url-pattern>
-		<!-- Plan Module END -->
-
-		<!-- CRM Module BEGIN -->
-		<url-pattern>/broadband-user/crm/customer/view/*</url-pattern>
-		<url-pattern>/broadband-user/crm/customer/personal/create</url-pattern>
-		<url-pattern>/broadband-user/crm/customer/business/create</url-pattern>
-		<url-pattern>/broadband-user/crm/customer/edit/*</url-pattern>
-		<url-pattern>/broadband-user/crm/customer-service-record/view/*</url-pattern>
-		<url-pattern>/broadband-user/crm/ticket/view</url-pattern>
-		<url-pattern>/broadband-user/crm/plans/*</url-pattern>
-		<!-- CRM Module END -->
-
-		<!-- Billing Module BEGIN -->
-		<url-pattern>/broadband-user/billing/invoice/view/personal/*</url-pattern>
-		<url-pattern>/broadband-user/billing/invoice/view/business/*</url-pattern>
-		<url-pattern>/broadband-user/billing/transaction/view/*</url-pattern>
-		<url-pattern>/broadband-user/billing/chart/transaction-statistic/*</url-pattern>
-		<url-pattern>/broadband-user/billing/chart/invoice-statistic/personal/*</url-pattern>
-		<url-pattern>/broadband-user/billing/chart/invoice-statistic/business/*</url-pattern>
-		<url-pattern>/broadband-user/billing/chart/annual-invoice-statistic/personal/*</url-pattern>
-		<url-pattern>/broadband-user/billing/chart/annual-invoice-statistic/business/*</url-pattern>
-		<url-pattern>/broadband-user/billing/voucher/view/*</url-pattern>
-		<url-pattern>/broadband-user/billing/voucher-file-upload-record/view/*</url-pattern>
-		<url-pattern>/broadband-user/billing/early-termination-charge/view/*</url-pattern>
-		<url-pattern>/broadband-user/billing/termination-refund/view/*</url-pattern>
-		<url-pattern>/broadband-user/billing/chart/calling-statistic/*</url-pattern>
-		<url-pattern>/broadband-user/billing/ddccinvoice/view</url-pattern>
-		<!-- Billing Module END -->
-
-		<!-- Provision Module BEGIN -->
-		<url-pattern>/broadband-user/provision/view/*</url-pattern>
-		<url-pattern>/broadband-user/provision/customer/view/*</url-pattern>
-		<url-pattern>/broadband-user/provision/contact-us/view/*</url-pattern>
-		<url-pattern>/broadband-user/provision/sale/view/*</url-pattern>
-		<url-pattern>/broadband-user/provision/number-couldnot-find/*</url-pattern>
-		<url-pattern>/broadband-user/provision/pstn-position-view/*</url-pattern>
-		<!-- Provision Module END -->
-
-		<!-- Data Module BEGIN -->
-		<url-pattern>/broadband-user/data/operatre</url-pattern>
-		<url-pattern>/broadband-user/data/customer/view</url-pattern>
-		<!-- Data Module END -->
-
-		<!-- System Module BEGIN -->
-		<url-pattern>/broadband-user/system/user/view/*</url-pattern>
-		<url-pattern>/broadband-user/system/user/create</url-pattern>
-		<url-pattern>/broadband-user/system/user/edit/*</url-pattern>
-		<url-pattern>/broadband-user/system/notification/view/*</url-pattern>
-		<url-pattern>/broadband-user/system/notification/create</url-pattern>
-		<url-pattern>/broadband-user/system/notification/edit/*</url-pattern>
-		<url-pattern>/broadband-user/system/company-detail/edit</url-pattern>
-		<url-pattern>/broadband-user/system/seo/edit</url-pattern>
-		<url-pattern>/broadband-user/system/chart/customer-register/*</url-pattern>
-		<url-pattern>/broadband-user/system/ir/edit</url-pattern>
-		<url-pattern>/broadband-user/system/website_editable_details</url-pattern>
-		<url-pattern>/broadband-user/system/plan_introductions</url-pattern>
-		<url-pattern>/broadband-user/system/website_static_resources</url-pattern>
-		<url-pattern>/broadband-user/system/terms_conditions</url-pattern>
-		<url-pattern>/broadband-user/system/pdf_resources</url-pattern>
-		<!-- System Module END -->
-
-		<!-- Sales Module BEGIN -->
-		<url-pattern>/broadband-user/sale/online/ordering/view/*</url-pattern>
-		<url-pattern>/broadband-user/sale/online/ordering/plans</url-pattern>
-		<url-pattern>/broadband-user/sale/sales-commission/view</url-pattern>
-		<!-- Sales Module END -->
-
-		<!-- Manual Manipulation Module BEGIN -->
-		<url-pattern>/broadband-user/manual-manipulation/manual-manipulation-record/view/*</url-pattern>
-		<url-pattern>/broadband-user/manual-manipulation/call-billing-record/view/*</url-pattern>
-		<url-pattern>/broadband-user/manual-manipulation/pstn-call-rate/view/*</url-pattern>
-		<url-pattern>/broadband-user/manual-manipulation/vos-voip-call-rate/view/*</url-pattern>
-		<!-- Manual Manipulation Module END -->
-
-		<!-- Agent Module BEGIN -->
-		<url-pattern>/broadband-user/agent/billing/invoice/view/*</url-pattern>
-		<url-pattern>/broadband-user/agent/billing/chart/commission-statistic/*</url-pattern>
-		<!-- Agent Module END -->
-
-		<!-- Inventory Module BEGIN -->
-		<url-pattern>/broadband-user/inventory/equip/view</url-pattern>
-		<url-pattern>/broadband-user/inventory/equip/log/view</url-pattern>
-		<!-- Inventory Module END -->
-
-	</filter-mapping>
-	
-	
-	<!-- <filter>
-		<filter-name>UrlRedirectFilter</filter-name>
-		<filter-class>com.tm.broadband.filter.UrlRedirectFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>UrlRedirectFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping> -->
-
-	<error-page>
-		<error-code>400</error-code>
-		<location>/public/static/error-400.html</location>
-	</error-page>
-	<error-page>
-		<error-code>404</error-code>
-		<location>/public/static/error-404.html</location>
-	</error-page>
-	<error-page>
-		<error-code>405</error-code>
-		<location>/public/static/error-405.html</location>
-	</error-page>
-	<error-page>
-		<error-code>500</error-code>
-		<location>/public/static/error-500.html</location>
-	</error-page>
-
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+  <welcome-file-list>
+    <welcome-file></welcome-file>
+  </welcome-file-list>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.js</url-pattern>
+    <url-pattern>*.css</url-pattern>
+    <url-pattern>*.png</url-pattern>
+    <url-pattern>*.gif</url-pattern>
+    <url-pattern>*.jpg</url-pattern>
+    <url-pattern>*.bpm</url-pattern>
+    <url-pattern>*.map</url-pattern>
+    <url-pattern>*.html</url-pattern>
+    <url-pattern>*.eot</url-pattern>
+    <url-pattern>*.svg</url-pattern>
+    <url-pattern>*.ttf</url-pattern>
+    <url-pattern>*.woff</url-pattern>
+    <url-pattern>*.txt</url-pattern>
+    <url-pattern>*.xml</url-pattern>
+  </servlet-mapping>
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:spring/application-config.xml</param-value>
+  </context-param>
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  <servlet>
+    <servlet-name>dispatcherServlet</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>/WEB-INF/mvc-config.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>dispatcherServlet</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>Kaptcha</servlet-name>
+    <servlet-class>com.google.code.kaptcha.servlet.KaptchaServlet</servlet-class>
+    <init-param>
+      <param-name>kaptcha.image.width</param-name>
+      <param-value>140</param-value>
+    </init-param>
+    <init-param>
+      <param-name>kaptcha.image.height</param-name>
+      <param-value>54</param-value>
+    </init-param>
+    <init-param>
+      <param-name>kaptcha.textproducer.char.length</param-name>
+      <param-value>4</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Kaptcha</servlet-name>
+    <url-pattern>/kaptcha.jpg</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>spring-ws</servlet-name>
+    <servlet-class>org.springframework.ws.transport.http.MessageDispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>transformWsdlLocations</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>spring-ws</servlet-name>
+    <url-pattern>/services/*</url-pattern>
+  </servlet-mapping>
+  <session-config>
+    <session-timeout>180</session-timeout>
+  </session-config>
+  <filter>
+    <filter-name>encodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>encodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter>
+    <filter-name>CustomerRegFilter</filter-name>
+    <filter-class>com.tm.broadband.filter.CustomerRegFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>CustomerRegFilter</filter-name>
+    <url-pattern>/plans/address-check/*</url-pattern>
+    <url-pattern>/plans/order</url-pattern>
+    <url-pattern>/plans/address/clear</url-pattern>
+    <url-pattern>/plans/order/summary</url-pattern>
+    <url-pattern>/plans/order/bankdeposit</url-pattern>
+    <url-pattern>/plans/order/dps</url-pattern>
+  </filter-mapping>
+  <filter>
+    <filter-name>CustomerSessionFilter</filter-name>
+    <filter-class>com.tm.broadband.filter.CustomerSessionFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>CustomerSessionFilter</filter-name>
+    <url-pattern>/customer/home</url-pattern>
+    <url-pattern>/customer/orders/*</url-pattern>
+    <url-pattern>/customer/new-order/*</url-pattern>
+    <url-pattern>/customer/change-password</url-pattern>
+    <url-pattern>/customer/topup</url-pattern>
+    <url-pattern>/customer/topup/checkout</url-pattern>
+    <url-pattern>/customer/ordering-form/checkout</url-pattern>
+    <url-pattern>/customer/topup-plan</url-pattern>
+    <url-pattern>/customer/topup-plan/checkout</url-pattern>
+    <url-pattern>/customer/invoice/checkout</url-pattern>
+  </filter-mapping>
+  <filter>
+    <filter-name>UserSessionFilter</filter-name>
+    <filter-class>com.tm.broadband.filter.UserSessionFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>UserSessionFilter</filter-name>
+    <url-pattern>/broadband-user/index</url-pattern>
+    <url-pattern>/broadband-user/plan/*</url-pattern>
+    <url-pattern>/broadband-user/crm/*</url-pattern>
+    <url-pattern>/broadband-user/billing/*</url-pattern>
+    <url-pattern>/broadband-user/provision/*</url-pattern>
+    <url-pattern>/broadband-user/data/*</url-pattern>
+    <url-pattern>/broadband-user/system/*</url-pattern>
+    <url-pattern>/broadband-user/sale/*</url-pattern>
+    <url-pattern>/broadband-user/manual-manipulation/*</url-pattern>
+  </filter-mapping>
+  <filter>
+    <filter-name>UserAuthFilter</filter-name>
+    <filter-class>com.tm.broadband.filter.UserAuthFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>UserAuthFilter</filter-name>
+    <url-pattern>/broadband-user/plan/view/*</url-pattern>
+    <url-pattern>/broadband-user/plan/create</url-pattern>
+    <url-pattern>/broadband-user/plan/edit/*</url-pattern>
+    <url-pattern>/broadband-user/plan/hardware/view/*</url-pattern>
+    <url-pattern>/broadband-user/plan/hardware/create</url-pattern>
+    <url-pattern>/broadband-user/plan/hardware/edit/*</url-pattern>
+    <url-pattern>/broadband-user/crm/customer/view/*</url-pattern>
+    <url-pattern>/broadband-user/crm/customer/personal/create</url-pattern>
+    <url-pattern>/broadband-user/crm/customer/business/create</url-pattern>
+    <url-pattern>/broadband-user/crm/customer/edit/*</url-pattern>
+    <url-pattern>/broadband-user/crm/customer-service-record/view/*</url-pattern>
+    <url-pattern>/broadband-user/crm/ticket/view</url-pattern>
+    <url-pattern>/broadband-user/crm/plans/*</url-pattern>
+    <url-pattern>/broadband-user/billing/invoice/view/personal/*</url-pattern>
+    <url-pattern>/broadband-user/billing/invoice/view/business/*</url-pattern>
+    <url-pattern>/broadband-user/billing/transaction/view/*</url-pattern>
+    <url-pattern>/broadband-user/billing/chart/transaction-statistic/*</url-pattern>
+    <url-pattern>/broadband-user/billing/chart/invoice-statistic/personal/*</url-pattern>
+    <url-pattern>/broadband-user/billing/chart/invoice-statistic/business/*</url-pattern>
+    <url-pattern>/broadband-user/billing/chart/annual-invoice-statistic/personal/*</url-pattern>
+    <url-pattern>/broadband-user/billing/chart/annual-invoice-statistic/business/*</url-pattern>
+    <url-pattern>/broadband-user/billing/voucher/view/*</url-pattern>
+    <url-pattern>/broadband-user/billing/voucher-file-upload-record/view/*</url-pattern>
+    <url-pattern>/broadband-user/billing/early-termination-charge/view/*</url-pattern>
+    <url-pattern>/broadband-user/billing/termination-refund/view/*</url-pattern>
+    <url-pattern>/broadband-user/billing/chart/calling-statistic/*</url-pattern>
+    <url-pattern>/broadband-user/provision/view/*</url-pattern>
+    <url-pattern>/broadband-user/provision/customer/view/*</url-pattern>
+    <url-pattern>/broadband-user/provision/contact-us/view/*</url-pattern>
+    <url-pattern>/broadband-user/provision/sale/view/*</url-pattern>
+    <url-pattern>/broadband-user/provision/number-couldnot-find/*</url-pattern>
+    <url-pattern>/broadband-user/provision/pstn-position-view/*</url-pattern>
+    <url-pattern>/broadband-user/data/operatre</url-pattern>
+    <url-pattern>/broadband-user/data/customer/view</url-pattern>
+    <url-pattern>/broadband-user/system/user/view/*</url-pattern>
+    <url-pattern>/broadband-user/system/user/create</url-pattern>
+    <url-pattern>/broadband-user/system/user/edit/*</url-pattern>
+    <url-pattern>/broadband-user/system/notification/view/*</url-pattern>
+    <url-pattern>/broadband-user/system/notification/create</url-pattern>
+    <url-pattern>/broadband-user/system/notification/edit/*</url-pattern>
+    <url-pattern>/broadband-user/system/company-detail/edit</url-pattern>
+    <url-pattern>/broadband-user/system/seo/edit</url-pattern>
+    <url-pattern>/broadband-user/system/chart/customer-register/*</url-pattern>
+    <url-pattern>/broadband-user/system/ir/edit</url-pattern>
+    <url-pattern>/broadband-user/sale/online/ordering/view/*</url-pattern>
+    <url-pattern>/broadband-user/sale/online/ordering/plans</url-pattern>
+    <url-pattern>/broadband-user/manual-manipulation/manual-manipulation-record/view/*</url-pattern>
+    <url-pattern>/broadband-user/manual-manipulation/call-billing-record/view/*</url-pattern>
+    <url-pattern>/broadband-user/manual-manipulation/pstn-call-rate/view/*</url-pattern>
+    <url-pattern>/broadband-user/manual-manipulation/vos-voip-call-rate/view/*</url-pattern>
+    <url-pattern>/broadband-user/agent/billing/invoice/view/*</url-pattern>
+    <url-pattern>/broadband-user/agent/billing/chart/commission-statistic/*</url-pattern>
+  </filter-mapping>
+  <error-page>
+    <error-code>400</error-code>
+    <location>/public/static/error-400.html</location>
+  </error-page>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/public/static/error-404.html</location>
+  </error-page>
+  <error-page>
+    <error-code>405</error-code>
+    <location>/public/static/error-405.html</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/public/static/error-500.html</location>
+  </error-page>
 </web-app>

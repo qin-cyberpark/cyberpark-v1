@@ -21,11 +21,10 @@ public class CustomerCallRecord implements Serializable {
 	private Date statement_date;
 	private String record_type;
 	private String clear_service_id;
-	private String line_description;
 	private Date date_from;
 	private Date date_to;
 	private Date charge_date_time;
-	private Double duration;
+	private Integer duration;
 	private String oot_id;
 	private String billing_description;
 	private Double amount_excl;
@@ -87,14 +86,6 @@ public class CustomerCallRecord implements Serializable {
 		this.clear_service_id = clear_service_id;
 	}
 
-	public String getLine_description() {
-		return line_description;
-	}
-
-	public void setLine_description(String line_description) {
-		this.line_description = line_description;
-	}
-
 	public Date getDate_from() {
 		return date_from;
 	}
@@ -119,11 +110,11 @@ public class CustomerCallRecord implements Serializable {
 		this.charge_date_time = charge_date_time;
 	}
 
-	public Double getDuration() {
+	public Integer getDuration() {
 		return duration;
 	}
 
-	public void setDuration(Double duration) {
+	public void setDuration(Integer duration) {
 		this.duration = duration;
 	}
 

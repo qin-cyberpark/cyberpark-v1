@@ -24,7 +24,7 @@ public class CustomerChorusBroadbandASIDRecord implements Serializable {
 	private Date date_from;
 	private Date date_to;
 	private Date charge_date_time;
-	private Double duration;
+	private Integer duration;
 	private String oot_id;
 	private String billing_description;
 	private Double amount_excl;
@@ -110,11 +110,11 @@ public class CustomerChorusBroadbandASIDRecord implements Serializable {
 		this.charge_date_time = charge_date_time;
 	}
 
-	public Double getDuration() {
+	public Integer getDuration() {
 		return duration;
 	}
 
-	public void setDuration(Double duration) {
+	public void setDuration(Integer duration) {
 		this.duration = duration;
 	}
 

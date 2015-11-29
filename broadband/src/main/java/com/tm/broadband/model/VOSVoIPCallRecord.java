@@ -19,7 +19,7 @@ public class VOSVoIPCallRecord implements Serializable {
 	private Date call_start;
 	private String ori_number;
 	private String dest_number;
-	private Double call_length;
+	private Integer call_length;
 	private Integer charge_length;
 	private Double call_fee;
 	private Double call_cost;
@@ -70,10 +70,10 @@ public class VOSVoIPCallRecord implements Serializable {
 	public void setDest_number(String dest_number) {
 		this.dest_number = dest_number;
 	}
-	public Double getCall_length() {
+	public Integer getCall_length() {
 		return call_length;
 	}
-	public void setCall_length(Double call_length) {
+	public void setCall_length(Integer call_length) {
 		this.call_length = call_length;
 	}
 	public Integer getCharge_length() {

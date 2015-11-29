@@ -54,15 +54,13 @@
 	var naked = false;
 	var has_voip = false;
 	var modem_name = '';
-	var isContract = true;
+	var isContract = false;
 	if (select_customer_type == 'personal') {
 		if (select_plan_group == 'plan-topup') {
 			isContract = false;
 		} else {
 			isContract = (select_plan_type == 'VDSL' && sale_id == '20023' ? true : false);
 			if (contract == '12 months contract') {
-				isContract = true;
-			} else if (contract == '24 months contract') {
 				isContract = true;
 			} else if (contract == 'open term') {
 				isContract = false;
@@ -76,7 +74,6 @@
 	var order_broadband_type = 'Transfer Broadband Connection';
 	var prepay_months = prepay_month_tmpl.attr('data-prepay_months');
 	var discount_desc = '';
-	var plan_or_hardware_discount = 'hardware';
 	var connection_date = 'ASAP';
 	var hardware_class = '';
 	var cal;
@@ -270,9 +267,6 @@
 		$('input[name="contract"]').iCheck({ checkboxClass: 'icheckbox_square-green', radioClass: 'iradio_square-green' });
 		$('input[name="contract"]').on('ifChecked', function(){
 			var value = this.value;
-			if(value=='open-term'){
-				value = '12months';
-			}
 			if (value == 'open-term') {
 				isContract = false;
 				contract_name = '';
@@ -294,25 +288,11 @@
 				//flushModems();
 				//flushBroadbandOptions();
 				flushPrepayMonth();
-			} else if (value == '24months') {
-				isContract = true;
-				contract_name = '24 months contract';
-				discount_desc = '';
-				//select_modem_container.show('fast');
-				//prepay_months_container.hide('fast');
-				//prepay_months = 1;
-				//price.discount_price = 0;
-				//modem_selected = null;
-				//flushModems();
-				//flushBroadbandOptions();
-				flushPrepayMonth();
 			}
 			
 		});
 		
-		isContract = true;
-		
-		var contract_oo = $('input[name="contract"][value="' + (isContract ? '12months' : isContract ? '24months' : 'open-term') + '"]');
+		var contract_oo = $('input[name="contract"][value="' + (isContract ? '12months' : 'open-term') + '"]');
 		contract_oo.iCheck('check');
 	}
 	
@@ -325,13 +305,11 @@
 			, select_plan_type: select_plan_type
 			, isContract: isContract
 			, sale_id: sale_id
-			, prepay_months: prepay_months
 		};
 		$('#prepay-month').html(tmpl('prepay_month_tmpl', o));
 		$('input[name="prepaymonths"]').iCheck({ checkboxClass: 'icheckbox_square-green', radioClass: 'iradio_square-green' });
 		$('input[name="prepaymonths"]').on('ifChecked', function(){
-			var value = Number(this.value);
-			console.log('contract: '+value);
+			var value = Number(this.value); 
 			months_selected = value;
 			if (value == 1) {
 				//select_modem_container.show('fast');
@@ -360,30 +338,17 @@
 					}
 				} else {
 					//console.log('running');
-					if(plan_or_hardware_discount=='plan'){
-						discount_desc = '3% off the total price of 3 months plan';
-						prepay_months = 3;
-						price.discount_price = parseInt(price.plan_price * 3 * 0.03);
-						modem_selected = null;
-					} else {
-						discount_desc = 'Hardware Discount';
-						prepay_months = 3;
-						price.discount_price = 0;
-						modem_selected = null;
-					}
+					discount_desc = '3% off the total price of 3 months plan';
+					prepay_months = 3;
+					price.discount_price = parseInt(price.plan_price * 3 * 0.03);
+					modem_selected = null;
 				}
 				
 			} else if (value == 6) {
 				//select_modem_container.show('fast');
-				if(plan_or_hardware_discount=='plan'){
-					discount_desc = '7% off the total price of 6 months plan';
-					prepay_months = 6;
-					price.discount_price = parseInt(price.plan_price * 6 * 0.07);
-				} else {
-					discount_desc = 'Hardware Discount';
-					prepay_months = 6;
-					price.discount_price = 0;
-				}
+				discount_desc = '7% off the total price of 6 months plan';
+				prepay_months = 6;
+				price.discount_price = parseInt(price.plan_price * 6 * 0.07);
 				modem_selected = null;
 			} else if (value == 12) {
 				if (select_plan_type == 'VDSL' && sale_id == '10023') {
@@ -393,15 +358,9 @@
 					//open_term_container.hide('fast');
 					//prepay_months_container.hide('fast');
 				} else {
-					if(plan_or_hardware_discount=='plan'){
-						discount_desc = '15% off the total price of 12 months plan with free modem';
-						prepay_months = 12;
-						price.discount_price = parseInt(price.plan_price * 12 * 0.15);
-					} else {
-						discount_desc = 'Hardware Discount';
-						prepay_months = 12;
-						price.discount_price = 0;
-					}
+					discount_desc = '15% off the total price of 12 months plan with free modem';
+					prepay_months = 12;
+					price.discount_price = parseInt(price.plan_price * 12 * 0.15);
 				}
 				
 				//select_modem_container.hide('fast');
@@ -434,131 +393,8 @@
 			price.save_modem_price = 0;
 			modem_name = '';
 			
-			$('a[data-name="discount_type"]').click(function(){
-				plan_or_hardware_discount = $(this).attr('data-val');
-
-				if (value == 1) {
-					//select_modem_container.show('fast');
-					discount_desc = '';
-					prepay_months = 1;
-					price.discount_price = 0;
-					modem_selected = null;
-				} else if (value == 3) {
-					//select_modem_container.show('fast');
-					if (select_plan_type == 'VDSL' && sale_id == '20023') {
-						discount_desc = '<span class="text-danger">1 TB Portable Hard Drive (cost NZD$90), 100mins/mth International calling for 40 countries</span>';
-						prepay_months = 3;
-						price.discount_price = 0;
-						//open_term_container.hide('fast');
-						$.each(modems, function(){
-							if (this.id == 8) {
-								modem_selected = $.extend({}, this);
-								return false;
-							}
-						});
-						//console.log(modem_selected);
-						if (modem_selected != null) {
-							//modem_selected.hardware_price = 0;
-							hardware_id_selected = modem_selected.id; //console.log(hardware_id_selected);
-							hardware_value_selected = 'open-term'; //console.log(hardware_value_selected);
-						}
-					} else {
-						//console.log('running');
-						if(plan_or_hardware_discount=='plan'){
-							discount_desc = '3% off the total price of 3 months plan';
-							prepay_months = 3;
-							price.discount_price = parseInt(price.plan_price * 3 * 0.03);
-							modem_selected = null;
-						} else {
-							discount_desc = 'Hardware Discount';
-							prepay_months = 3;
-							price.discount_price = 0;
-							modem_selected = null;
-						}
-					}
-					
-				} else if (value == 6) {
-					//select_modem_container.show('fast');
-					if(plan_or_hardware_discount=='plan'){
-						discount_desc = '7% off the total price of 6 months plan';
-						prepay_months = 6;
-						price.discount_price = parseInt(price.plan_price * 6 * 0.07);
-					} else {
-						discount_desc = 'Hardware Discount';
-						prepay_months = 6;
-						price.discount_price = 0;
-					}
-					modem_selected = null;
-				} else if (value == 12) {
-					if (select_plan_type == 'VDSL' && sale_id == '10023') {
-						discount_desc = '<span class="text-danger">free iPad Mini 16G, free VoIP Wifi modem, 200 calling minutes of 40 countries</span>';
-						prepay_months = 12;
-						price.discount_price = 0;
-						//open_term_container.hide('fast');
-						//prepay_months_container.hide('fast');
-					} else {
-						if(plan_or_hardware_discount=='plan'){
-							discount_desc = '15% off the total price of 12 months plan with free modem';
-							prepay_months = 12;
-							price.discount_price = parseInt(price.plan_price * 12 * 0.15);
-						} else {
-							discount_desc = 'Hardware Discount';
-							prepay_months = 12;
-							price.discount_price = 0;
-						}
-					}
-					
-					//select_modem_container.hide('fast');
-					
-					if (has_voip) { //console.log('has voip');
-						$.each(modems, function(){
-							if (this.support_voip) {
-								modem_selected = $.extend({}, this);
-								return false;
-							}
-						});
-					} else { //console.log('no voip');
-						$.each(modems, function(){
-							modem_selected = $.extend({}, this);
-							return false;
-						});
-					}
-					
-					//modem_selected = modems && $.extend({}, modems[0]);
-					//console.log(modem_selected);
-					if (modem_selected != null) {
-						//modem_selected.hardware_price = 0;
-						hardware_id_selected = modem_selected.id; //console.log(hardware_id_selected);
-						hardware_value_selected = 'open-term'; //console.log(hardware_value_selected);
-					}
-					
-				}
-				
-				flushModems();
-				flushBroadbandOptions();
-			});
-			
-			if(prepay_months!=1){
-				
-				$('div[data-name="discount_type_div"]').css('display','');
-				
-			} else {
-
-				$('div[data-name="discount_type_div"]').css('display','none');
-				
-			}
-			
 			flushModems();
 			flushBroadbandOptions();
-		});
-		
-		$('a[data-name="discount_type"]').click(function(){
-			
-			$('a[data-name="discount_type"]').removeClass('active');
-			$(this).addClass('active');
-				
-			
-			
 		});
 		
 		var months_oo = $('input[name="prepaymonths"][value="' + months_selected + '"]');
@@ -573,12 +409,10 @@
 			, prepay_months: prepay_months
 			, isContract: isContract
 			, hardwares: modems
-			, contract_name: contract_name
-			, plan_or_hardware_discount: plan_or_hardware_discount
 		};
-//		if (prepay_months == 12) {
-//			o.hardwares = [modem_selected];
-//		}
+		if (prepay_months == 12) {
+			o.hardwares = [modem_selected];
+		}
 		if (select_plan_type == 'VDSL' && sale_id == '20023' && prepay_months == 3) {
 			o.hardwares = [modem_selected];
 		}
@@ -610,15 +444,9 @@
 									if (this.id == 3 || this.id == 1) {
 										price.modem_price = parseInt(0);
 										price.save_modem_price = parseInt(this.hardware_price);
-									} else if(contract_name=='24 months contract') {
-										price.modem_price = 0;
-										price.save_modem_price = parseInt(this.hardware_price);
-									} else if(prepay_months == 1) {
-										price.modem_price = this.hardware_price;
-										price.save_modem_price = 0;
-									} else if(prepay_months == 3 || prepay_months == 6) {
-										price.modem_price = this.hardware_price - parseInt((this.hardware_price/12)*prepay_months);
-										price.save_modem_price = parseInt((this.hardware_price/12)*prepay_months);
+									} else {
+										price.modem_price = this.hardware_price - parseInt(this.hardware_price/2);
+										price.save_modem_price = parseInt(this.hardware_price/2);
 									}
 								}
 							} else if (prepay_months == 12) {
@@ -831,7 +659,6 @@
 			, discount_desc: discount_desc
 			, has_promotion_code: has_promotion_code
 			, promotion_rates: promotion_rates
-			, plan_or_hardware_discount: plan_or_hardware_discount
 		}; //console.log(o);
 		$('#order-modal').html(tmpl('order_modal_tmpl', o));
 	
@@ -870,7 +697,6 @@
 				, promotion: promotion
 				, hardwares: [modem_selected]
 				, hardware_id_selected: hardware_id_selected
-				, plan_or_hardware_discount: plan_or_hardware_discount
 			}
 		};
 			

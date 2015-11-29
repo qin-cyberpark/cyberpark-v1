@@ -34,13 +34,7 @@ public class VOSVoIPCallRecordUtility {
 				if(header){ header=false; continue; }
 				String arr[] = line.split(",");
 				if(arr.length > callCostIndex){
-					// If cost or charge less equals than 0
-					if(((arr[callCostIndex] != null && !"".equals(arr[callCostIndex].trim()) && Double.parseDouble(arr[callCostIndex])<=0)
-					   && (arr[callFeeIndex] != null && !"".equals(arr[callFeeIndex].trim()) && Double.parseDouble(arr[callFeeIndex])<=0))){
-						continue;
-					}
-					// If is Local or Inner-Net
-					if(arr[callTypeIndex] != null && !"".equals(arr[callTypeIndex].trim()) && "Local".equals(arr[callTypeIndex]) || "Inner-Net".equals(arr[callTypeIndex])){
+					if(arr[callCostIndex] != null && !"".equals(arr[callCostIndex].trim()) && Integer.parseInt(arr[callCostIndex])<=0){
 						continue;
 					}
 				}
@@ -59,6 +53,7 @@ public class VOSVoIPCallRecordUtility {
 	private static VOSVoIPCallRecord getVOSVoIPCallRecords(String line){
 		VOSVoIPCallRecord vosVoIPCallRecord = new VOSVoIPCallRecord();
 		String arr[] = line.split(",");
+
 		
 		// String: Original Number
 		if(arr.length > oriNumberIndex){
@@ -72,24 +67,13 @@ public class VOSVoIPCallRecordUtility {
 				if(arr.length > callStartIndex){
 					String callStartStr = arr[callStartIndex];
 					if(!"".equals(callStartStr.trim())){
-						if(callStartStr.contains("/")){
-							// if is yyyy/MM/dd
-							if(callStartStr.indexOf("/")==4){
-								vosVoIPCallRecord.setCall_start(TMUtils.parseDate5YYYYMMDDHHMM(callStartStr));
-							}
-							// if is dd/MM/yyyy
-							if(callStartStr.indexOf("/")==1 || callStartStr.indexOf("/")==2){
-								vosVoIPCallRecord.setCall_start(TMUtils.parseDate4YYYYMMDDHHMM(callStartStr));
-							}
-						} else {
-							vosVoIPCallRecord.setCall_start(TMUtils.parseDate2YYYYMMDD(callStartStr));
-						}
+						vosVoIPCallRecord.setCall_start(TMUtils.parseDate2YYYYMMDD(callStartStr));
 					}
 					
 					// Integer: Call Length
 					if(arr.length > callLengthIndex){
 						if(arr[callLengthIndex]!=null && !"".equals(arr[callLengthIndex].trim())){
-							vosVoIPCallRecord.setCall_length(Double.parseDouble(arr[callLengthIndex]));
+							vosVoIPCallRecord.setCall_length(Integer.parseInt(arr[callLengthIndex]));
 						}
 						
 						

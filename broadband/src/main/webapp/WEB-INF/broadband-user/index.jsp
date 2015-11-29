@@ -13,9 +13,6 @@
 .first-row-panel-success {
 	min-height: 300px;
 }
-.third-row-panel-success {
-	min-height: 400px;
-}
 hr {
 	margin:0 0 5px 0;
 }
@@ -26,15 +23,9 @@ hr {
 	<c:if test="${userSession.user_role != 'sales' && userSession.user_role != 'agent'}">
 	
 	<div class="row">
-	
-	
-	
-		<!-- BEGIN LEFT COLUMN -->
 		
 		<!-- left column  -->
 		<div class="col-md-6">
-		
-		<!-- BEGIN LEFT FIRST COLUMN -->
 			
 			<div class="row">
 				
@@ -130,11 +121,6 @@ hr {
 				</div>
 				
 			</div>
-		
-		<!-- END LEFT FIRST COLUMN -->
-			
-			
-		<!-- BEGIN LEFT SECOND COLUMN -->
 			
 			<div class="row">
 				
@@ -200,18 +186,13 @@ hr {
 				</div>
 				
 			</div>
-		
-		<!-- END LEFT SECOND COLUMN -->
-		
-		
-		<!-- BEGIN LEFT THIRD COLUMN -->
 			
 			<div class="row">
 			
 				<div class="col-md-6">
 				
 					<!-- Manual Module -->
-					<div class="panel panel-success third-row-panel-success">
+					<div class="panel panel-success">
 				  		<div class="panel-heading">
 				  			<h3 class="panel-title"><strong class="text-success">Manual Manipulation</strong></h3>
 				  		</div>
@@ -247,7 +228,7 @@ hr {
 				<div class="col-md-6">
 				
 					<!-- Voucher Module -->
-					<div class="panel panel-success third-row-panel-success">
+					<div class="panel panel-success">
 				  		<div class="panel-heading">
 				  			<h3 class="panel-title"><strong class="text-success">Voucher</strong></h3>
 				  		</div>
@@ -270,62 +251,12 @@ hr {
 				</div>
 				
 			</div>
-		
-		<!-- END LEFT THIRD COLUMN -->
-		
-		
-		<!-- BEGIN LEFT FOURTH COLUMN -->
-		
-			<div class="row">
-			
-				<div class="col-md-12">
-					
-					<!-- Inventory Module -->
-					<div class="panel panel-success">
-				  		<div class="panel-heading">
-				  			<h3 class="panel-title">
-				  				<strong class="text-success">Inventory</strong>
-				  			</h3>
-				  		</div>
-					  	<div class="panel-body">
-					  		<p>All CyberPark's related equipments and stocks.</p>
-					  		<div class="row">
-						  		<div class="col-md-6">
-				                    <ul class="list-unstyled">
-				                    	<li>
-				                    		<span class="glyphicon glyphicon-list" ></span> 
-				                    		<a href='${ctx }/broadband-user/inventory/equip/view'>View Equipments</a>
-				                    	</li>
-				                    	<li>
-				                    		<span class="glyphicon glyphicon-list" ></span> 
-				                    		<a href="${ctx}/broadband-user/inventory/equip/log/view">View Equipment Logs</a>
-				                    	</li>
-				                    </ul>
-						  		</div>
-					  		</div>
-					  	</div>
-					</div>
-					<!-- // Inventory Module -->
-					
-				</div>
-				
-			</div>
-		
-		
-		<!-- END LEFT FOURTH COLUMN -->
 			
 		</div>
 		<!-- // left column  -->
 		
-		<!-- END LEFT COLUMN -->
-		
-		
-		<!-- BEGIN RIGHT COLUMN -->
-		
 		<!-- right column -->
 		<div class="col-md-6">
-		
-		<!-- BEGIN RIGHT FIRST COLUMN -->
 		
 			<!-- Billing Module -->
 			<div class="panel panel-success first-row-panel-success">
@@ -344,20 +275,6 @@ hr {
 								<li>
 		                    		<span class="glyphicon glyphicon-list-alt" ></span> 
 		                    		<a href="${ctx }/broadband-user/billing/invoice/view/business/1/unpaid/all">View Invoice(Business)</a>
-		                    	</li>
-		                    </ul>
-							<hr/>
-							<ul class="list-unstyled">
-								<li>
-		                    		<span class="glyphicon glyphicon-list-alt" ></span> 
-		                    		<a href="${ctx }/broadband-user/billing/invoice/view/invoice-delayed/1">View Invoice Delayed</a>
-		                    	</li>
-							</ul>
-							<hr/>
-							<ul class="list-unstyled">
-								<li>
-		                    		<span class="glyphicon glyphicon-list-alt" ></span> 
-		                    		<a href="${ctx }/broadband-user/billing/ddccinvoice/view">View DD/CC Invoice</a>
 		                    	</li>
 								<li>
 		                    		<span class="glyphicon glyphicon-list-alt" ></span> 
@@ -411,49 +328,32 @@ hr {
 			  	</div>
 			</div>
 			<!-- // Billing Module -->
-		
-		<!-- END RIGHT FIRST COLUMN -->
-		
-		
-		<!-- BEGIN RIGHT SECOND COLUMN -->
-		
+			
 			<!-- Sales Module -->
 			<div class="panel panel-success">
 		  		<div class="panel-heading">
 		  			<h3 class="panel-title">
-		  				<strong class="text-success">Sales</strong>
+		  				<strong class="text-success">${userSession.user_role == 'agent' ? 'Ordering' : 'Sales'}</strong>
 		  			</h3>
 		  		</div>
 			  	<div class="panel-body">
-			  		<p>Sale Online Ordering.</p>
+			  		<p>${userSession.user_role == 'agent' ? 'Agent' : 'Sale'} Online Ordering.</p>
                     <ul class="list-unstyled">
                     	<li>
                     		<span class="glyphicon glyphicon-list" ></span> 
-                    		<a href='${ctx }/broadband-user/sale/online/ordering/view/1/0'>View Online Orders (PAD | PC)</a>
+                    		<a href='${ctx }/broadband-user/sale/online/ordering/view/1/${userSession.user_role == "sales" ? userSession.id : 0 }'>View Online Orders (PAD | PC)</a>
                     	</li>
                     	<li>
                     		<span class="glyphicon glyphicon-plus" ></span> 
                     		<a href="${ctx}/broadband-user/sale/plans">New Ordering Online (PAD | PC)</a>
                     	</li>
                     </ul>
-                    <hr/>
-                    <ul class="list-unstyled">
-                    	<li>
-                    		<span class="glyphicon glyphicon-list" ></span> 
-                    		<a href='${ctx }/broadband-user/sale/sales-commission/view'>View Sales Commission</a>
-                    	</li>
-                    </ul>
 			  	</div>
 			</div>
 			<!-- // Sales Module -->
-		
-		<!-- END RIGHT SECOND COLUMN -->
-		
-		
-		<!-- BEGIN RIGHT THIRD COLUMN -->
-		
+			
 			<!-- System Module -->
-			<div class="panel panel-success third-row-panel-success">
+			<div class="panel panel-success">
 		  		<div class="panel-heading">
 		  			<h3 class="panel-title"><strong class="text-success">System</strong></h3>
 		  		</div>
@@ -480,29 +380,6 @@ hr {
 		                    	<li>
 		                    		<span class="glyphicon glyphicon-plus" ></span> 
 		                    		<a href="${ctx }/broadband-user/system/notification/create">Create Notification</a>
-		                    	</li>
-		                    </ul>
-		                    <hr/>
-		                    <ul class="list-unstyled">
-		                    	<li>
-		                    		<span class="glyphicon glyphicon-pencil" ></span> 
-		                    		<a href="${ctx }/broadband-user/system/website_editable_details">Edit Website Editable Details</a>
-		                    	</li>
-		                    	<li>
-		                    		<span class="glyphicon glyphicon-pencil" ></span> 
-		                    		<a href="${ctx }/broadband-user/system/plan_introductions">Edit Plan Introductions</a>
-		                    	</li>
-		                    	<li>
-		                    		<span class="glyphicon glyphicon-pencil" ></span> 
-		                    		<a href="${ctx }/broadband-user/system/website_static_resources">Edit Website Static Resources</a>
-		                    	</li>
-		                    	<li>
-		                    		<span class="glyphicon glyphicon-pencil" ></span> 
-		                    		<a href="${ctx }/broadband-user/system/terms_conditions">Edit Terms Conditions</a>
-		                    	</li>
-		                    	<li>
-		                    		<span class="glyphicon glyphicon-pencil" ></span> 
-		                    		<a href="${ctx }/broadband-user/system/pdf_resources">Edit PDF Resources</a>
 		                    	</li>
 		                    </ul>
 		  				</div>
@@ -534,59 +411,10 @@ hr {
 			</div>
 			<!-- // System Module -->
 		
-			<!-- END RIGHT THIRD COLUMN -->
-		
-		
-			<!-- BEGIN LEFT FOURTH COLUMN -->
-		
-			<%-- <div class="row">
-			
-				<div class="col-md-12">
-					
-					<!-- Tutorial Module -->
-					<div class="panel panel-success">
-				  		<div class="panel-heading">
-				  			<h3 class="panel-title">
-				  				<strong class="text-success">Tutorial</strong>
-				  			</h3>
-				  		</div>
-					  	<div class="panel-body">
-					  		<p>CyberPark's Management System's User Manual.</p>
-					  		<div class="row">
-						  		<div class="col-md-6">
-				                    <ul class="list-unstyled">
-				                    	<li>
-				                    		<span class="glyphicon glyphicon-facetime-video" ></span>
-				                    		<a href='${ctx }/broadband-user/tutorial/video/view'>View Videos</a>
-				                    	</li>
-				                    	<li>
-				                    		<span class="glyphicon glyphicon-facetime-video" ></span>
-				                    		<a href='${ctx }/broadband-user/tutorial/manual/view'>View Manuals</a>
-				                    	</li>
-				                    </ul>
-						  		</div>
-					  		</div>
-					  	</div>
-					</div>
-					<!-- // Tutorial Module -->
-					
-				</div>
-				
-			</div> --%>
-		
-		
-		<!-- END LEFT FOURTH COLUMN -->
-		
 		</div>
 		<!-- // right column -->
 		
-		<!-- BEGIN RIGHT COLUMN -->
-		
-		
 	</div>
-			
-			
-			
 	
 	</c:if>
 	
@@ -682,7 +510,7 @@ hr {
 		
 	</div>	
 		
-	</c:if>	
+	</c:if>
 	
 </div>
 
