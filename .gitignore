@@ -12,8 +12,8 @@ Servers/
 ###############
 #    project  #
 ###############
-braodband/.settings/
-braodband/target/
-braodband/.classpath/
-braodband/project/
-braodband/.springBeans/
+broadband/.settings/
+broadband/target/
+broadband/.classpath
+broadband/.project
+broadband/.springBeans
