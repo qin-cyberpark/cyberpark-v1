@@ -1,0 +1,663 @@
+<style>
+.void{
+	background:rgba(137,143,156,0.5);
+}
+.btn-void{
+	color:#fff;
+	background:rgba(137,143,156,1);
+}
+.btn-void:hover{
+	color:#fff;
+	background:rgba(137,143,156,0.75);
+}
+.unpaid{
+	background:rgba(250,70,120,0.3);
+}
+.unpaid:hover{
+	background:rgba(250,70,120,0.35);
+}
+.overdue{
+	background:rgba(220,50,90,0.3);
+}
+.overdue:hover{
+	background:rgba(220,50,90,0.35);
+}
+.prepayment{
+	background:rgba(173,206,169,0.3);
+}
+.prepayment:hover{
+	background:rgba(173,206,169,0.35);
+}
+.paid{
+	background:rgba(153,186,149,0.3);
+}
+.paid:hover{
+	background:rgba(153,186,149,0.35);
+}
+.void{
+	background:rgba(137,143,156,0.3);
+}
+.void:hover{
+	background:rgba(137,143,156,0.35);
+}
+.bad-debit{
+	background:rgba(77,83,96,0.3);
+}
+.bad-debit:hover{
+	background:rgba(77,83,96,0.35);
+}
+
+.xs-btn-width {
+	width:150px;
+}
+
+.xs-btn-width-long {
+	width:180px;
+}
+
+.bootstrap-select.btn-group, .bootstrap-select.btn-group[class*="span"] {
+	margin-bottom: 0;
+}
+
+</style>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th colspan="12">
+				<!-- In the external page, assign orderIds as obj's attribute -->
+				<h3 class="text-success" style="margin: 2px;">
+					<. if(user_role=='administrator' || user_role=='system-developer' || user_role=='accountant'){ .>
+					<select class="selectpicker" data-name="unbind_invoice_selecter">
+					    <option value="0">------------Operation------------</option>
+					    <option value="unbind-invoice">Unbind Invoice</option>
+					</select>
+					&nbsp;
+					<a href="javascript:void(0);" class="btn btn-warning btn-xs xs-btn-width-long" data-name="invoice_need_to_be_bind" data-customer-id="<.= customer_id .>">Invoice(s) Need To Be Bind</a>
+					
+					<. } .>
+				</h3>
+				<br/>
+			</th>
+		</tr>
+		<tr>
+			<th><input type="checkbox" id="checkbox_invoices_top" /></th>
+			<th>Reference</th>
+			<th style="width:94px;">Create Date</th>
+			<th style="width:94px;">Due Date</th>
+			<th>Payable</th>
+			<th>Credit</th>
+			<th>Paid</th>
+			<th>Balance</th>
+			<th>Status / Defray Way</th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<. if(user_role=='system-developer'){ .>
+				<th style="text-align:center;">OP</th>
+			<. } .>
+		</tr>
+	</thead>
+<. if (invoicePage.results != null && invoicePage.results.length <= 0) { .>
+	<tbody></tbody>
+</table>
+<. } .>
+<. if (invoicePage.results != null && invoicePage.results.length > 0) { .>
+<. for (var o = 0, len = orderIds.length; o < len; o++){ .>
+	<tbody>
+		<.
+				
+			var is_duplicated_order_id = false;
+			var recorded_order_id;
+			
+			var totalBalance = 0;
+			
+			for (var i = 0, invoiceLen = invoicePage.results.length; i < invoiceLen; i++) {
+				var invoice = invoicePage.results[i];
+				
+				if(orderIds[o]==invoice.order_id){
+				
+				
+					totalBalance += invoice.balance;
+					
+				}
+			}
+			
+			for (var i = 0, invoiceLen = invoicePage.results.length; i < invoiceLen; i++) {
+				var invoice = invoicePage.results[i];
+				
+				if(orderIds[o]==invoice.order_id){
+				
+					if(!is_duplicated_order_id && recorded_order_id!=invoice.order_id){
+						is_duplicated_order_id = true;
+						recorded_order_id = invoice.order_id;
+						.>
+						<tr class="bg-warning">
+							<td colspan="12">
+								<h3 class="text-danger" style="text-align:center;"><strong>Order#:&nbsp;<.= recorded_order_id .>&nbsp;&nbsp;Customer#:&nbsp;<.= invoice.customer_id .></strong><strong class="pull-right">Total Balance: $<.= Number(totalBalance).toFixed(2) .></strong></h3>
+								
+							</td>
+						</tr>
+						<.
+					}
+				
+					for (var t = transactionsList.length-1; t >= 0; t--) {
+						var tx = transactionsList[t];
+						
+						if(tx.invoice_id==invoice.id){
+		.>
+							<tr>
+								<td>&nbsp;</td>
+								<td>Transaction# - <.= tx.id .></td>
+								<td><.= tx.transaction_date_str .></td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td><strong>-<.= Number(tx.amount).toFixed(2) .></strong></td>
+								<td>&nbsp;</td>
+								<td style="text-align:center;"><strong><.= tx.card_name .></strong></td>
+								<. if(tx.executor == null){ .>
+									<td>&nbsp;</td>
+									<td>&nbsp;</td>
+								<. } else { .>
+									<.
+										for(var u=0; u<users.length; u++){
+									   		if(users[u].id == tx.executor){
+									.>
+										<td>Executed By</td>
+										<td><.= users[u].user_name .> -<br/><.= users[u].user_role .></td>
+									<.
+									   		}
+										}
+									.>
+								<. } .>
+								<. if(user_role=='system-developer'){ .>
+									<td>&nbsp;</td>
+								<. } .>
+							</tr>
+		<.
+						}
+					}
+		.>
+					<tr class="<.= (invoice.status=='unpaid' || invoice.status=='not_pay_off') ? 'unpaid' : 
+									invoice.status=='overdue' ? 'overdue' :
+									invoice.status=='prepayment' ? 'prepayment' :
+									invoice.status=='paid' ? 'paid' :
+									invoice.status=='void' ? 'void' :
+									invoice.status=='bad-debit' ? 'bad-debit' : '' .>" >
+					<td>
+						<input type="checkbox" name="checkbox_invoices" value="<.= invoice.id .>"/>
+					</td>
+					<td>Invoice# - <.= invoice.id .></td>
+					<td><.= invoice.create_date_str .></td>
+		<.
+					if(invoice.status!='unpaid' && invoice.status!='not_pay_off'){
+		.>
+						<td>&nbsp;</td>
+		<.
+					} else {
+		.>
+						<td><strong style="color:red;"><.= invoice.due_date_str .></strong></td>
+		<.
+					}
+		.>
+					<td><strong><.= Number(invoice.amount_payable).toFixed(2) .></strong></td>
+					<td><strong>-<.= Number(invoice.amount_payable - invoice.final_payable_amount).toFixed(2) .></strong></td>
+					<td>
+						<strong>-<.= Number(invoice.amount_paid).toFixed(2) .></strong>
+						<. if(user_role=='administrator' || user_role=='system-developer' || user_role=='accountant'){ .>
+						<a id="<.= invoice.id .>" class="btn btn-warning btn-xs" data-val="<.= Number(invoice.amount_paid).toFixed(2) .>" data-name="<.= invoice.id .>_edit_paid_amount">
+						  	<span class="glyphicon glyphicon-pencil"></span> 
+						</a>
+						<. } .>
+					</td>
+					<td><strong><.= Number(invoice.balance).toFixed(2) .></strong></td>
+					<td>
+						<. if(user_role=='administrator' || user_role=='system-developer' || user_role=='accountant'){ .>
+						<. var invoice_status_arr = ['unpaid','not_pay_off','paid','overdue','void','bad-debit']; .>
+						<. var invoice_status_arr2 = ['Unpaid','Not Pay Off','Paid','Overdue','Void','Bad Debit']; .>
+						<select data-name="invoice_status_selecter_<.= invoice.id .>" data-id="<.= invoice.id .>" class="form-control input-sm">
+						<. for(var is=0; is<invoice_status_arr.length; is++){ .>
+							<. if(invoice.status==invoice_status_arr[is]){ .>
+							<option value="<.= invoice_status_arr[is] .>" selected="selected"><.= invoice_status_arr2[is] .></option>
+							<. } else { .>
+							<option value="<.= invoice_status_arr[is] .>"><.= invoice_status_arr2[is] .></option>
+							<. } .>
+						<. } .>
+						</select>
+						<. } else { .>
+						<strong><.= invoice.status .></strong>
+						<. } .>
+					</td>
+		<. 
+					if((invoice.status=='unpaid' || invoice.status=='not_pay_off' || invoice.status=='overdue')
+					&& (user_role=='administrator' || user_role=='system-developer' || user_role=='accountant')){
+		.>
+					<td>
+						<div class="btn-group" style="height:44px; width:118px;">
+							<. if(invoice.payment_status == 'pending'){ .>
+								<button type="button" class="btn btn-warning btn-xs" data-name="make_payment_<.= invoice.id .>">Pending</button>
+								<button type="button" class="btn btn-warning btn-xs dropdown-toggle" data-toggle="dropdown">
+									<span class="caret"></span>
+								</button>
+							<. } else { .>
+								<button type="button" class="btn btn-primary btn-xs" data-name="make_payment_<.= invoice.id .>">Make Payment</button>
+								<button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">
+									<span class="caret"></span>
+								</button>
+							<. } .>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="<.= ctx .>/broadband-user/crm/customer/invoice/payment/credit-card/<.= invoice.id .>/crm_invoice/<.= invoice.status .>"><span class="glyphicon glyphicon-link"></span>&nbsp;&nbsp;DPS</a></li>
+								<li><a href="#"><span class="glyphicon glyphicon-link"></span>&nbsp;&nbsp;Paypal</a></li>
+								<li class="divider"></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="credit-card" ><span class="glyphicon glyphicon-credit-card"></span>&nbsp;&nbsp;Credit Card</a></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="a2a" ><span class="glyphicon glyphicon-transfer"></span>&nbsp;&nbsp;Account2Account</a></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="ddpay" ><span class="glyphicon glyphicon-share-alt"></span>&nbsp;&nbsp;DDPay</a></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="cash" ><span class="glyphicon glyphicon-usd"></span>&nbsp;&nbsp;Cash</a></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="cyberpark-credit" ><span class="glyphicon glyphicon-star-empty"></span>&nbsp;&nbsp;CyberPark Credit</a></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="account-credit" ><span class="glyphicon glyphicon-star"></span>&nbsp;&nbsp;Account Credit</a></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="voucher" ><span class="glyphicon glyphicon-tags"></span>&nbsp;&nbsp;Voucher</a></li>
+								<li class="divider"></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="pending" ><span class="glyphicon glyphicon-pause"></span>&nbsp;&nbsp;Pending</a></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="void" ><span class="glyphicon glyphicon-thumbs-down"></span>&nbsp;&nbsp;Avoid</a></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="bad-debit" ><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;Bad Debit</a></li>
+							</ul>
+						</div>
+					</td>
+		<.
+					} else if(invoice.status=='void'){
+		.>
+					<td>
+						<div class="btn-group">
+							<button type="button" class="btn btn-void btn-xs" data-name="make_payment_<.= invoice.id .>">Void</button>
+							<button type="button" class="btn btn-void btn-xs dropdown-toggle" data-toggle="dropdown">
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="<.= ctx .>/broadband-user/crm/customer/invoice/payment/credit-card/<.= invoice.id .>"><span class="glyphicon glyphicon-link"></span>&nbsp;&nbsp;DPS</a></li>
+								<li><a href="#"><span class="glyphicon glyphicon-link"></span>&nbsp;&nbsp;Paypal</a></li>
+								<li class="divider"></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="credit-card" ><span class="glyphicon glyphicon-credit-card"></span>&nbsp;&nbsp;Credit Card</a></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="a2a" ><span class="glyphicon glyphicon-transfer"></span>&nbsp;&nbsp;Account2Account</a></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="ddpay" ><span class="glyphicon glyphicon-share-alt"></span>&nbsp;&nbsp;DDPay</a></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="cash" ><span class="glyphicon glyphicon-usd"></span>&nbsp;&nbsp;Cash</a></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="voucher" ><span class="glyphicon glyphicon-tags"></span>&nbsp;&nbsp;Voucher</a></li>
+								<li class="divider"></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="pending" ><span class="glyphicon glyphicon-pause"></span>&nbsp;&nbsp;Pending</a></li>
+								<li><a href="javascript:void(0);" id="<.= invoice.id .>" data-name="pay_way_by_<.= invoice.id .>" data-way="void" ><span class="glyphicon glyphicon-thumbs-down"></span>&nbsp;&nbsp;Avoid</a></li>
+							</ul>
+						</div>
+					</td>
+		<. 
+					} else {
+		.>
+					<td>&nbsp;</td>
+		<. 
+					}
+					var downloadUrl = ctx+'/broadband-user/crm/customer/invoice/pdf/download/' + invoice.id;
+					var sendUrl = ctx+'/broadband-user/crm/customer/invoice/pdf/send/' + invoice.id + '/' + invoice.order_id;
+					if((invoice.status=='unpaid' || invoice.status=='not_pay_off' || invoice.status=='overdue')){
+						if(invoice.invoice_pdf_path != null){
+		.>
+						<td>
+						<!-- <. if(user_role=='administrator' || user_role=='system-developer' || user_role=='accountant'){ .>
+								regenerate icon
+								<a target="_blank" href="javascript:void(0);" id="<.= invoice.id .>" data-name="generateUrl_<.= invoice.id .>" data-toggle="tooltip" data-placement="bottom" data-original-title="regenerate invoice PDF" style="font-size:22px;"><span class="glyphicon glyphicon-refresh"></span></a>&nbsp;
+						<. }.> -->
+							<!-- download icon -->
+							<a target="_blank" href="<.= downloadUrl .>" id="<.= invoice.id .>" data-toggle="tooltip" data-placement="bottom" data-original-title="download invoice PDF"><span class="glyphicon glyphicon-floppy-disk" style="font-size:22px;"></span></a>&nbsp;
+						<. if(user_role=='administrator' || user_role=='system-developer' || user_role=='accountant'){ .>
+							<!-- send icon -->
+							<a target="_blank" href="<.= sendUrl .>" id="<.= invoice.id .>" data-toggle="tooltip" data-placement="bottom" data-original-title="send invoice details to customer's email" style="font-size:22px;"><span class="glyphicon glyphicon-send"></span></a>
+						<. }.>
+						</td>
+		<.
+						} else {
+		.>
+						<td>
+						<!-- <. if(user_role=='administrator' || user_role=='system-developer' || user_role=='accountant'){ .>
+							regenerate icon
+							<a target="_blank" href="javascript:void(0);" id="<.= invoice.id .>" data-name="generateUrl_<.= invoice.id .>" data-toggle="tooltip" data-placement="bottom" data-original-title="regenerate invoice PDF" style="display:none;font-size:22px;"><span class="glyphicon glyphicon-refresh"></span></a>&nbsp;&nbsp;&nbsp;
+						<. }.> -->
+							<!-- download icon -->
+							<a target="_blank" href="<.= downloadUrl .>" id="<.= invoice.id .>" data-toggle="tooltip" data-placement="bottom" data-original-title="download invoice PDF" style="display:none;font-size:22px;"><span class="glyphicon glyphicon-floppy-disk"></span></a>&nbsp;&nbsp;&nbsp;
+						<. if(user_role=='administrator' || user_role=='system-developer' || user_role=='accountant'){ .>
+							<!-- send icon -->
+							<a target="_blank" href="<.= sendUrl .>" id="<.= invoice.id .>" data-name="send_<.= invoice.id .>" data-toggle="tooltip" data-placement="bottom" data-original-title="send invoice details to customer's email" style="display:none;font-size:22px;"><span class="glyphicon glyphicon-send"></span></a>
+							<a target="_blank" href="javascript:void(0);" id="<.= invoice.id .>" data-name="firstGenerate_<.= invoice.id .>" data-toggle="tooltip" data-placement="bottom" data-original-title="generate invoice PDF" style="font-size:22px;"><span class="glyphicon glyphicon-hdd"></span></a>
+						<. }.>
+						</td>
+		<.
+						}
+					} else {
+						if(user_role=='administrator' || user_role=='system-developer' || user_role=='accountant' || user_role=='provision-team'){
+		.>
+					<td>
+						<!-- <. if(user_role=='administrator' || user_role=='system-developer' || user_role=='accountant'){ .>
+							regenerate icon
+							<a target="_blank" href="javascript:void(0);" id="<.= invoice.id .>" data-name="generateUrl_<.= invoice.id .>" data-toggle="tooltip" data-placement="bottom" data-original-title="regenerate invoice PDF"><span class="glyphicon glyphicon-refresh"></span></a>&nbsp;&nbsp;&nbsp;
+						<. }.> -->
+						<!-- download icon -->
+						<a target="_blank" href="<.= downloadUrl .>" data-toggle="tooltip" data-placement="bottom" data-original-title="download invoice PDF"><span class="glyphicon glyphicon-floppy-disk"></span></a>&nbsp;&nbsp;&nbsp;
+					</td>
+		<.
+						} else {
+		.>
+					<td>&nbsp;</td>
+		<.
+						}
+					}
+		.>
+				<. if(user_role=='system-developer' || user_role=='accountant'){ .>
+					<td style="text-align:center;">
+						<a id="<.= invoice.id .>" data-name="remove_invoice_btn_<.= invoice.id .>" class="btn btn-danger btn-xs" href="javascript:void(0);">
+							<span class="glyphicon glyphicon-trash"></span>
+						</a>
+					</td>
+				<. } .>
+				</tr>
+
+		<. } .>
+		
+		<!-- regenerateInvoice Modal -->
+		<div class="modal fade" id="regenerateInvoiceModal_<.= invoice.id .>" data-id="<.= invoice.id .>" tabindex="-1" role="dialog" aria-labelledby="regenerateInvoiceModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="regenerateInvoiceModalLabel">
+							<strong>Regenerate this invoice?</strong>
+						</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<p>
+								<strong>This operation will regenerate this selected invoice's PDF.</strong>
+							</p>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<a href="javascript:void(0);" class="btn btn-success col-md-12" data-name="regenerateInvoiceBtn_<.= invoice.id .>" id="<.= invoice.id .>" data-dismiss="modal"><strong>Confirm to regenerate this invoice</strong></a>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal-dialog -->
+		</div>
+		<!-- /.modal -->
+		
+		<!-- confirmPayWay Modal -->
+		<div class="modal fade" id="confirmPayWayModal_<.= invoice.id .>" data-id="<.= invoice.id .>" tabindex="-1" role="dialog" aria-labelledby="confirmPayWayModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="confirmPayWayModalLabel">
+							<strong data-name="confirm_payway_modal_title_<.= invoice.id .>"></strong>
+						</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group" style="display:none;" data-name="cash_defray_amount_input_<.= invoice.id .>">
+							<label for="defray_amount" class="control-label col-md-6">Defray Amount:</label>
+							<div class="col-md-6">
+								<input name="defray_amount_<.= invoice.id .>" value="<.= Number(invoice.balance).toFixed(2) .>" class="form-control input-sm" type="text" placeholder="Defray Amount"/>
+							</div>
+						</div>
+						<div class="form-group" style="display:none;" data-name="vouchar_pin_number_input_<.= invoice.id .>">
+							<label for="pin_number" class="control-label col-md-6">Pin Number:</label>
+							<div class="col-md-6">
+								<input id="pin_number" name="pin_number_<.= invoice.id .>" class="form-control input-sm" type="text" placeholder="Pin Number"/>
+							</div>
+						</div>
+						<br/>
+						<div class="form-group">
+							<p data-name="confirm_payway_modal_content_<.= invoice.id .>">
+								<strong></strong>
+							</p>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<a href="javascript:void(0);" class="btn btn-success col-md-12" data-name="confirm_payway_modal_btn_<.= invoice.id .>" id="<.= invoice.id .>" data-dismiss="modal"></a>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal-dialog -->
+		</div>
+		<!-- /.modal -->
+
+		<!-- Remove invoice Modal -->
+		<div class="modal fade" id="removeInvoiceModal_<.= invoice.id .>" tabindex="-1" role="dialog" aria-labelledby="removeInvoiceModalLabel_<.= invoice.id .>" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title text-danger" id="removeInvoiceModalLabel_<.= invoice.id .>">
+							<strong>Remove selected invoice permanently!</strong>
+						</h4>
+					</div>
+					<div class="modal-body">
+						<p class="text-warning">
+							Sure to remove this invoice permanently?
+						</p>
+					</div>
+					<div class="modal-footer">
+						<a href="javascript:void(0);" class="btn btn-danger" data-name="removeInvoiceModalModalBtn_<.= invoice.id .>" data-dismiss="modal">Remove</a>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal-dialog -->
+		</div>
+		<!-- /.modal -->
+
+		<!-- Change invoice status Modal -->
+		<div class="modal fade" id="changeInvoiceStatusModal_<.= invoice.id .>" tabindex="-1" role="dialog" aria-labelledby="changeInvoiceStatusModalLabel_<.= invoice.id .>" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title text-danger" id="changeInvoiceStatusModalLabel_<.= invoice.id .>" >
+								Change the status
+						</h4>
+					</div>
+					<div class="modal-body">
+						<p class="text-warning">
+							Sure to switch this invoice's status?
+						</p>
+					</div>
+					<div class="modal-footer">
+						<a href="javascript:void(0);" class="btn btn-danger btn-xs" data-name="changeInvoiceStatusModalBtn_<.= invoice.id .>" data-id="<.= invoice.id .>" data-dismiss="modal">Switch</a>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal-dialog -->
+		</div>
+		<!-- /.modal -->
+
+		<!-- Change Invoice Paid Amount Modal -->
+		<form class="form-horizontal">
+		<div class="modal fade" id="editInvoicePaidAmountModal_<.= invoice.id .>" tabindex="-1" role="dialog" aria-labelledby="editInvoicePaidAmountModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+						<div class="row">
+							<div class="panel panel-success">
+								<div class="panel-heading">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title text-danger" id="editInvoicePaidAmountModalLabel" >
+											Edit Invoice Paid Amount
+									</h4>
+								</div>
+								<div class="panel-body">
+									<div class="form-group">
+										<label class="control-label col-md-6" style="text-align:right;">Paid Amount</label>
+										<div class="col-md-4">
+											<input class="form-control" data-name="invoice_paid_amount_input_<.= invoice.id .>" value="<.= Number(invoice.amount_paid).toFixed(2) .>"/>
+										</div>
+									</div>
+								</div>
+								<div class="panel-footer col-md-12">
+									<a href="javascript:void(0);" id="<.= invoice.id .>" class="btn btn-sm btn-success col-md-offset-5" data-name="editInvoicePaidAmountModalBtn_<.= invoice.id .>" data-dismiss="modal">Edit</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal-dialog -->
+		</div>
+		</form>
+		<!-- /.modal -->
+		
+		
+		
+	<. } .>
+<. } .>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan="12">
+				<ul class="pagination">
+	<.
+					for (var i = 1, len = invoicePage.totalPage; i <= len; i++) {
+	.>
+						<li class="<.= invoicePage.pageNo == i ? 'active' : '' .>">
+							<a href="javascript:void(0);" data-pageNo="<.=i.>" data-cblPageNo="<.=cblPage.pageNo.>" style="cursor:pointer;"><.=i.></a>
+						</li>
+	<.
+					}
+	.>
+				</ul>
+			</td>
+		</tr>
+	</tfoot>
+<. } else { .>
+	<div class="alert alert-warning">No records have been found.</div>
+<. } .>
+
+<div>
+<table class="table">
+	<thead>
+		<tr>
+			<th colspan="12">
+				<h3 class="text-success" style="margin: 2px;">
+					<strong>Operation Records:&nbsp;</strong>
+				</h3>
+				<br/>
+			</th>
+		</tr>
+		<tr>
+			<th><input type="checkbox" id="checkbox_cbls_top" /></th>
+			<th>Invoice #</th>
+			<th>Operate Type</th>
+			<th>Operate Name</th>
+			<th>Operate Date</th>
+			<th>Executor</th>
+		</tr>
+	</thead>
+<. if (cblPage.results != null && cblPage.results.length > 0) { .>
+	<tbody>
+		<.
+			for (var i = 0, cblLen = cblPage.results.length; i < cblLen; i++) {
+				var cbl = cblPage.results[i];
+		.>
+		<tr>
+			<td><input type="checkbox" id="checkbox_cbl_top" /></td>
+			<td><.= cbl.invoice_id .></td>
+			<td><.= cbl.oper_type .></td>
+			<td><.= cbl.oper_name .></td>
+			<td><.= cbl.oper_date_str .></td>
+			<td>
+				<.
+					for(var u=0; u<users.length; u++){
+				   		if(users[u].id == cbl.user_id){
+				.>
+					<.= users[u].user_name .> -<br/><.= users[u].user_role .>
+				<.
+				   		}
+					}
+				.>
+			</td>
+		</tr>
+		<. } .>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan="11">
+				<ul class="pagination">
+	<.
+					for (var i = 1, len = cblPage.totalPage; i <= len; i++) {
+	.>
+						<li class="<.= cblPage.pageNo == i ? 'active' : '' .>">
+							<a href="javascript:void(0);" data-pageNo="<.=invoicePage.pageNo.>" data-cblPageNo="<.=i.>" style="cursor:pointer;"><.=i.></a>
+						</li>
+	<.
+					}
+	.>
+				</ul>
+			</td>
+		</tr>
+	</tfoot>
+<. } .>
+</table>
+</div>
+		<!-- Unbind invoice Modal -->
+		<div class="modal fade" id="unbindInvoiceModal" tabindex="-1" role="dialog" aria-labelledby="unbindInvoiceModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title text-danger" id="unbindInvoiceModalLabel" >
+								Unbind the invoice(s)
+						</h4>
+					</div>
+					<div class="modal-body">
+						<form class="form-horizontal">
+							<div class="form-group">
+								<p class="text-warning">
+									Unbind the selected invoice(s)
+								</p>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<a href="javascript:void(0);" class="btn btn-danger btn-xs" data-name="unbindInvoiceModalBtn" data-dismiss="modal">Unbind</a>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal-dialog -->
+		</div>
+		<!-- /.modal -->
+
+		<!-- Invoice need to be bind Modal -->
+		<div class="modal fade" id="invoiceNeedToBeBindModal" tabindex="-1" role="dialog" aria-labelledby="invoiceNeedToBeBindModalLabel" aria-hidden="true">
+			<div class="modal-dialog" style="width:1200px;">
+				<div class="modal-content">
+					<div class="modal-body">
+						<div class="row">
+							<div class="panel panel-success">
+								<div class="panel-heading">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title text-danger" id="invoiceNeedToBeBindModalLabel" >
+											Bind the invoice(s)
+									</h4>
+								</div>
+								<div class="panel-body">
+									<form class="form-horizontal" data-name="bind_invoice_form">
+									</form>
+								</div>
+								<div class="panel-footer col-md-12">
+									<a href="javascript:void(0);" class="btn btn-sm btn-success col-md-offset-5" data-name="invoiceNeedToBeBindModalBtn" data-dismiss="modal">Bind</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal-dialog -->
+		</div>
+		<!-- /.modal -->

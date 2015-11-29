@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- DEFINITION AREA --><!-- // DEFINITION AREA -->
+<!-- =================================================================================== -->
+<!-- SELECT AREA --><!-- // END SELECT AREA -->
+<!-- =================================================================================== -->
+<!-- INSERT AREA --><!-- // END INSERT AREA -->
+<!-- =================================================================================== -->
+<!-- UPDATE AREA --><!-- // END UPDATE AREA -->
+<!-- =================================================================================== -->
+<!-- DELETE AREA --><!-- // END DELETE AREA -->
+
+<mapper namespace="com.tm.broadband.mapper.HardwareMapper">
+	
+	<!-- DEFINITION AREA -->
+	
+	<sql id="hardwareWhere">
+		<where>
+			<choose>
+				<when test="params.where == 'query_by_class_with_voip'">
+					hardware_class = #{params.hardware_class} or hardware_class = 'router-voip'
+				</when>
+				<otherwise>
+					<if test="params.router_adsl != null">router_adsl = #{params.router_adsl}</if>
+					<if test="params.router_vdsl != null">and router_vdsl = #{params.router_vdsl}</if>
+					<if test="params.router_ufb != null">and router_ufb = #{params.router_ufb}</if>
+					<if test="params.support_voip != null">and support_voip = #{params.support_voip}</if>
+					<if test="params.hardware_type != null">and hardware_type = #{params.hardware_type}</if>
+					<if test="params.hardware_status != null">and hardware_status = #{params.hardware_status}</if>
+				</otherwise>
+			</choose>
+		</where>
+	</sql>
+
+	<!-- // DEFINITION AREA -->
+	
+	<!-- =================================================================================== -->
+	
+	<!-- SELECT AREA -->
+	
+	<select id="selectHardware" parameterType="Hardware" resultType="Hardware">
+		select * from tm_hardware
+		<include refid="hardwareWhere"/>
+	</select>
+	
+	<select id="selectHardwares" parameterType="Hardware" resultType="Hardware">
+		select * from tm_hardware
+		<include refid="hardwareWhere"/>
+	</select>
+
+	<!-- select hardware page -->
+	<select id="selectHardwaresByPage" parameterType="Page" resultType="Hardware">
+		select * from tm_hardware
+		<include refid="hardwareWhere"/>
+		<if test="params.orderby != null">${params.orderby}</if>
+		limit #{pageOffset}, #{pageSize}
+	</select>
+	
+	<!-- select hardware sum -->
+	<select id="selectHardwaresSum" parameterType="Page" resultType="int">
+		select count(*) from tm_hardware
+		<include refid="hardwareWhere"/>
+	</select>
+	
+	<!-- when create hardware, check same name -->
+	<select id="selectExistHardwareByName" resultType="int">
+		select count(*) from tm_hardware where hardware_name = #{0} 
+	</select>
+	
+	<!-- select hardware by id -->
+	<select id="selectHardwareById" parameterType="int" resultType="Hardware">
+		select * from tm_hardware where id = #{0}
+	</select>
+	
+	
+	
+	<!-- // END SELECT AREA -->
+	<!-- =================================================================================== -->
+	<!-- INSERT AREA -->
+	
+	<!-- insert hardware -->
+	<insert id="insertHardware" parameterType="Hardware">
+		INSERT INTO `tm_hardware`(
+			`hardware_name`, `hardware_desc`, `hardware_class`, `hardware_type`, 
+			`hardware_status`, `hardware_price`, `hardware_cost`, 
+			`router_adsl`, `router_vdsl`, `router_ufb`, `support_pstn`, `support_voip`)
+		VALUES (
+			#{hardware_name}, #{hardware_desc}, #{hardware_class}, #{hardware_type}, 
+			#{hardware_status}, #{hardware_price}, #{hardware_cost}, 
+			#{router_adsl}, #{router_vdsl}, #{router_ufb}, #{support_pstn}, #{support_voip})
+	</insert>
+	
+	<!-- // END INSERT AREA -->
+	<!-- =================================================================================== -->
+	<!-- UPDATE AREA -->
+		
+	<!-- update plan -->
+	<update id="updateHardware" parameterType="Hardware">
+		UPDATE `tm_hardware` 
+		<set>
+			<if test="hardware_name != null">`hardware_name` = #{hardware_name},</if>
+			<if test="hardware_desc != null">`hardware_desc` = #{hardware_desc},</if>
+			<if test="hardware_class != null">`hardware_class` = #{hardware_class},</if>
+			<if test="hardware_type != null">`hardware_type` = #{hardware_type},</if>
+			<if test="hardware_status != null">`hardware_status` = #{hardware_status},</if>
+			<if test="hardware_price != null">`hardware_price` = #{hardware_price},</if>
+			<if test="hardware_cost != null">`hardware_cost` = #{hardware_cost},</if>
+			
+			<if test="router_adsl != null">`router_adsl` = #{router_adsl},</if>
+			<if test="router_vdsl != null">`router_vdsl` = #{router_vdsl},</if>
+			<if test="router_ufb != null">`router_ufb` = #{router_ufb},</if>
+			<if test="support_pstn != null">`support_pstn` = #{support_pstn},</if>
+			<if test="support_voip != null">`support_voip` = #{support_voip}</if>
+		</set>
+		<where>
+			<if test="params.id != null">`id`=#{params.id}</if>
+		</where>
+	</update>
+	
+	<update id="updateHardwarePicById" parameterType="Hardware">
+		UPDATE `tm_hardware`
+		<set>
+			<if test="img1 != null">`img1`=#{img1},</if>
+			<if test="img2 != null">`img2`=#{img2},</if>
+			<if test="img3 != null">`img3`=#{img3}</if>
+		</set>
+		<where>
+			<if test="params.id != null">`id`=#{params.id}</if>
+		</where>
+	</update>
+	
+	<!-- // END UPDATE AREA -->
+	<!-- =================================================================================== -->
+	<!-- DELETE AREA -->
+	
+	<delete id="deleteHardwareById">
+		DELETE FROM tm_hardware WHERE id=#{0}
+	</delete>
+	
+	<!-- // END DELETE AREA -->
+
+	
+</mapper>

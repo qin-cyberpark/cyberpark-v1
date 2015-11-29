@@ -1,0 +1,659 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- DEFINITION AREA --><!-- // DEFINITION AREA -->
+<!-- =================================================================================== -->
+<!-- SELECT AREA --><!-- // END SELECT AREA -->
+<!-- =================================================================================== -->
+<!-- INSERT AREA --><!-- // END INSERT AREA -->
+<!-- =================================================================================== -->
+<!-- UPDATE AREA --><!-- // END UPDATE AREA -->
+<!-- =================================================================================== -->
+<!-- DELETE AREA --><!-- // END DELETE AREA -->
+
+<mapper namespace="com.tm.broadband.mapper.CustomerInvoiceMapper">
+	
+	<!-- DEFINITION AREA -->
+	
+	<sql id="pageWhere">
+		<where>
+			<choose>
+				<when test="params.where == 'query_non_paid_status'">
+					<if test="params.customer_type != null">
+						order_id in(
+							select id from tm_customer_order
+							where customer_type=#{params.customer_type}
+						)
+					</if>
+					<if test="params.create_date_month != null">
+						and DATE_FORMAT(create_date,'%Y-%m')=#{params.create_date_month}
+					</if>
+					<if test="params.non_paid_status == 'true'">
+						and status!='paid'
+					</if>
+					and (
+						customer_id in( select customer_id from tm_customer_credit )
+						or
+						customer_id in( select customer_id from tm_customer_ddpay )
+					)
+					and order_id in(
+						select id from tm_customer_order
+						where is_ddpay = true
+					)
+				</when>
+				<when test="params.where == 'non_pending'">
+					payment_status IS NULL
+					<if test="params.id != null">and id = #{params.id}</if>
+					<if test="params.customer_id != null">and customer_id = #{params.customer_id}</if>
+					<if test="params.order_id != null">and order_id = #{params.order_id}</if>
+					<if test="params.status != null">and status = #{params.status}</if>
+					<if test="params.sale_id != null">
+						and order_id IN (
+							select id from tm_customer_order where sale_id=#{params.sale_id}
+						)
+					</if>
+					<if test="params.not_agent !=null">
+						and order_id in(
+							select id from tm_customer_order
+							where order_status='using'
+						)
+					</if>
+					<if test="params.customer_type != null">
+						and order_id in(
+							select id from tm_customer_order
+							where customer_type=#{params.customer_type}
+						)
+					</if>
+					<if test="params.create_date_month != null">
+						and DATE_FORMAT(create_date,'%Y-%m')=DATE_FORMAT(#{params.create_date_month},'%Y-%m')
+					</if>
+					<if test="params.create_date_year != null">
+						and DATE_FORMAT(create_date,'%Y')=DATE_FORMAT(#{params.create_date_year},'%Y')
+					</if>
+				</when>
+				<when test="params.where == 'pending'">
+					<if test="params.status1 != null">and (status = #{params.status1} or status = #{params.status2})</if>
+					<if test="params.status11 != null">and (status = #{params.status11} or status = #{params.status12} or status = #{params.status13})</if>
+					<if test="params.payment_status != null">and payment_status = #{params.payment_status}</if>
+					<if test="params.sale_id != null">
+						and order_id IN (
+							select id from tm_customer_order where sale_id=#{params.sale_id}
+						)
+					</if>
+					<if test="params.not_agent !=null">
+						and order_id in(
+							select id from tm_customer_order
+							where order_status='using'
+						)
+					</if>
+					<if test="params.customer_type != null">
+						and order_id in(
+							select id from tm_customer_order
+							where customer_type=#{params.customer_type}
+						)
+					</if>
+					<if test="params.create_date_month != null">
+						and DATE_FORMAT(create_date,'%Y-%m')=DATE_FORMAT(#{params.create_date_month},'%Y-%m')
+					</if>
+					<if test="params.create_date_year != null">
+						and DATE_FORMAT(create_date,'%Y')=DATE_FORMAT(#{params.create_date_year},'%Y')
+					</if>
+				</when>
+				<when test="params.where == 'by_all_not_pay_off_invoice'">
+					customer_id = #{params.customer_id}
+					AND status IN('unpaid','not_pay_off','overdue')
+				</when>
+				<otherwise>
+					<if test="params.id != null">id = #{params.id}</if>
+					<if test="params.customer_id != null">and customer_id = #{params.customer_id}</if>
+					<if test="params.order_id != null">and order_id = #{params.order_id}</if>
+					<if test="params.status != null">and status = #{params.status}</if>
+					<if test="params.payment_status != null">and payment_status = #{params.payment_status}</if>
+					<if test="params.sale_id != null">
+						and order_id IN (
+							select id from tm_customer_order where sale_id=#{params.sale_id}
+						)
+					</if>
+					<if test="params.prepayment == true">
+						and status='paid' and balance&lt;0
+					</if>
+					<if test="params.non_prepayment == true">
+						and balance=0
+					</if>
+					<if test="params.customer_type != null">
+						and order_id in(
+							select id from tm_customer_order
+							where customer_type=#{params.customer_type}
+						)
+					</if>
+					<if test="params.create_date_month != null">
+						and DATE_FORMAT(create_date,'%Y-%m')=DATE_FORMAT(#{params.create_date_month},'%Y-%m')
+					</if>
+					<if test="params.create_date_year != null">
+						and DATE_FORMAT(create_date,'%Y')=DATE_FORMAT(#{params.create_date_year},'%Y')
+					</if>
+				</otherwise>
+			</choose>
+		</where>
+	</sql>
+	<sql id="customerInvoiceWhere">
+		<where>
+			<choose>
+				<when test="params.where == 'by_max_id'">
+					id=(
+						SELECT MAX(id) FROM tm_customer_invoice 
+						WHERE customer_id=#{params.customer_id}
+						AND order_id=#{params.order_id}
+					)
+				</when>
+				<when test="params.where == 'by_max_id_with_invoice_type'">
+					id=(
+						SELECT MAX(id) FROM tm_customer_invoice 
+						WHERE customer_id=#{params.customer_id}
+						AND order_id=#{params.order_id}
+					)
+					AND invoice_type=#{params.invoice_type}
+				</when>
+				<when test="params.where == 'by_second_id'">
+					id=(
+						SELECT MAX(id) FROM tm_customer_invoice
+						WHERE customer_id=#{params.customer_id} AND order_id=#{params.order_id}
+						AND id != (
+							SELECT MAX(id) FROM tm_customer_invoice
+							WHERE customer_id=#{params.customer_id} AND order_id=#{params.order_id}
+						)
+					)
+				</when>
+				<when test="params.where == 'query_most_unpaid_invoice'">
+					id IN(
+						SELECT MAX(id) FROM tm_customer_invoice
+						WHERE status=#{params.status}
+						GROUP BY order_id
+					)
+				</when>
+				<when test="params.where == 'by_overdue_penalty'">
+					<if test="params.status != null">status = #{params.status}</if>
+					<if test="params.begin_date != null and params.end_date != null">and due_date BETWEEN #{params.begin_date} AND #{params.end_date}</if>
+					<if test="params.customer_type != null">
+						and order_id in(
+							select id from tm_customer_order
+							where customer_type=#{params.customer_type}
+						)
+					</if>
+				</when>
+				<when test="params.where == 'by_unpaid_due_date_less_than_today'">
+					date(due_date) &lt;= date(now())
+					and status = 'unpaid'
+				</when>
+				<when test="params.where == 'by_overdue_over_three_month'">
+					status = 'overdue'
+					and date(due_date) &lt;= date(#{params.dueMonthMax})
+				</when>
+				<when test="params.where == 'create_date_status2_due_date_is_not_null'">
+					and date(create_date) = date(#{params.create_date})
+					and (status = #{params.status} or status = #{params.status2})
+					and due_date IS NOT NULL
+					and order_id IN(
+						SELECT id FROM tm_customer_order
+						WHERE (is_ddpay is NULL or is_ddpay=false)
+					)
+					and invoice_type = #{params.invoice_type}
+				</when>
+				<when test="params.where == 'create_date2_status2_due_date_is_not_null'">
+					and (date(create_date) = date(#{params.create_date}) or date(create_date) = date(#{params.create_date2}))
+					and (status = #{params.status} or status = #{params.status2})
+					and due_date IS NOT NULL
+					and order_id IN(
+						SELECT id FROM tm_customer_order
+						WHERE (is_ddpay is NULL or is_ddpay=false)
+					)
+					and invoice_type = #{params.invoice_type}
+				</when>
+				<otherwise>
+					<if test="params.id != null">id = #{params.id}</if>
+					<if test="params.customer_id != null">and customer_id = #{params.customer_id}</if>
+					<if test="params.order_id != null">and order_id = #{params.order_id}</if>
+					<if test="params.status != null">and status = #{params.status}</if>
+					<if test="params.payment_status != null">and payment_status = #{params.payment_status}</if>
+					<if test="params.create_date != null">and date(create_date) = date(#{params.create_date})</if>
+					<if test="params.due_date != null">and date(due_date) = date(#{params.due_date})</if>
+					<if test="params.original_order_id != null">and original_order_id = #{params.original_order_id}</if>
+					<if test="params.original_customer_id != null">and original_customer_id = #{params.original_customer_id}</if>
+					<if test="params.invoice_type != null">and invoice_type = #{params.invoice_type}</if>
+					<if test="params.chorus_calling_credit != null">and chorus_calling_credit = #{params.chorus_calling_credit}</if>
+					<if test="params.chorus_calling_charge != null">and chorus_calling_charge = #{params.chorus_calling_charge}</if>
+					<if test="params.nca_calling_credit != null">and nca_calling_credit = #{params.nca_calling_credit}</if>
+					<if test="params.nca_calling_charge != null">and nca_calling_charge = #{params.nca_calling_charge}</if>
+					<if test="params.vos_calling_credit != null">and vos_calling_credit = #{params.vos_calling_credit}</if>
+					<if test="params.vos_calling_charge != null">and vos_calling_charge = #{params.vos_calling_charge}</if>
+					<if test="params.status_in_unpaid_overdue_not_pay_off == 'true'">
+						and status in( 'unpaid','overdue','not_pay_off' )
+					</if>
+					<if test="params.id_not_in != null">
+						and id not in( #{params.id_not_in} )
+					</if>
+				</otherwise>
+			</choose>
+		</where>
+	</sql>
+	
+	<sql id="customerInvoiceColumns">
+		i.`id`						as i_id,
+		i.`invoice_serial`			as i_invoice_serial,
+		i.`create_date`				as i_create_date,
+		i.`due_date`				as i_due_date,
+		i.`final_payable_amount`	as i_final_payable_amount,
+		i.`amount_payable`			as i_amount_payable,
+		i.`amount_paid`				as i_amount_paid,
+		i.`balance`					as i_balance,
+		i.`status`					as i_status,
+		i.`memo`					as i_memo,
+		i.`invoice_pdf_path`		as i_invoice_pdf_path,
+		i.`paid_date`				as i_paid_date,
+		i.`paid_type`				as i_paid_type,
+		i.`last_invoice_id`			as i_last_invoice_id,
+		i.`payment_status`			as i_payment_status,
+		i.`original_order_id`		as i_original_order_id,
+		i.`original_customer_id`	as i_original_customer_id,
+		i.`invoice_type`			as i_invoice_type,
+		i.`chorus_calling_credit`	as i_chorus_calling_credit,
+		i.`chorus_calling_charge`	as i_chorus_calling_charge,
+		i.`nca_calling_credit`		as i_nca_calling_credit,
+		i.`nca_calling_charge`		as i_nca_calling_charge,
+		i.`vos_calling_credit`		as i_vos_calling_credit,
+		i.`vos_calling_charge`		as i_vos_calling_charge
+	</sql>
+	<sql id="customerLastInvoiceColumns">
+		li.`id`							as li_id,
+		li.`invoice_serial`				as li_invoice_serial,
+		li.`create_date`				as li_create_date,
+		li.`due_date`					as li_due_date,
+		li.`final_payable_amount`		as li_final_payable_amount,
+		li.`amount_payable`				as li_amount_payable,
+		li.`amount_paid`				as li_amount_paid,
+		li.`balance`					as li_balance,
+		li.`status`						as li_status,
+		li.`memo`						as li_memo,
+		li.`invoice_pdf_path`			as li_invoice_pdf_path,
+		li.`paid_date`					as li_paid_date,
+		li.`paid_type`					as li_paid_type,
+		li.`last_invoice_id`			as li_last_invoice_id,
+		li.`payment_status`				as li_payment_status,
+		li.`original_order_id`			as li_original_order_id,
+		li.`original_customer_id`		as li_original_customer_id,
+		li.`invoice_type`				as li_invoice_type,
+		li.`chorus_calling_credit`		as li_chorus_calling_credit,
+		li.`chorus_calling_charge`		as li_chorus_calling_charge,
+		li.`nca_calling_credit`			as li_nca_calling_credit,
+		li.`nca_calling_charge`			as li_nca_calling_charge,
+		li.`vos_calling_credit`			as li_vos_calling_credit,
+		li.`vos_calling_charge`			as li_vos_calling_charge
+	</sql>
+	<sql id="customerColumns">
+		c.`id` 				as c_id, 
+		c.`login_name` 		as c_login_name, 
+		c.`password` 		as c_password,
+		c.`md5_password` 	as c_md5_password,
+		c.`user_name` 		as c_user_name, 
+		c.`first_name` 		as c_first_name, 
+		c.`last_name` 		as c_last_name, 
+		c.`address` 		as c_address, 
+		c.`email` 			as c_email, 
+		c.`phone` 			as c_phone, 
+		c.`cellphone` 		as c_cellphone, 
+		c.`status` 			as c_status, 
+		c.`invoice_post` 	as c_invoice_post,
+		c.`register_date` 	as c_register_date, 
+		c.`active_date` 	as c_active_date, 
+		c.`balance` 		as c_balance,
+		c.`title`			as c_title,
+		c.`birth`			as c_birth,
+		c.`driver_licence`	as c_driver_licence,
+		c.`passport`		as c_passport,
+		c.`country`			as c_country,
+		c.`company_name`	as c_company_name,
+		c.`customer_type`	as c_customer_type
+	</sql>
+	<sql id="customerOrderColumns">
+		co.`id` 								as co_id, 
+		co.`order_serial` 						as co_order_serial, 
+		co.`customer_id` 						as co_customer_id, 
+		co.`order_total_price` 					as co_order_total_price, 
+		co.`order_create_date` 					as co_order_create_date, 
+		co.`order_status` 						as co_order_status, 
+		co.`order_using_start` 					as co_order_using_start,
+		co.`next_invoice_create_date` 			as co_next_invoice_create_date,
+		co.`next_invoice_create_date_flag` 		as co_next_invoice_create_date_flag,
+		co.`order_type` 						as co_order_type,
+		co.`order_broadband_type` 				as co_order_broadband_type,
+		co.`svlan`	 							as co_svlan,
+		co.`cvlan` 								as co_cvlan,
+		co.`transition_provider_name` 			as co_transition_provider_name,
+		co.`transition_account_holder_name`  	as co_transition_account_holder_name,
+		co.`transition_account_number`			as co_transition_account_number,
+		co.`transition_porting_number`			as co_transition_porting_number,
+		co.`hardware_post`						as co_hardware_post,
+		co.`order_due`							as co_order_due,
+		co.`pstn_count`							as co_pstn_count,
+		co.`pstn_rental_amount`					as co_pstn_rental_amount,
+		co.`term_period`						as co_term_period,
+		co.`pppoe_loginname`					as co_pppoe_loginname,
+		co.`pppoe_password`						as co_pppoe_password,
+		co.`sale_id`							as co_sale_id,
+		co.`order_pdf_path`						as co_order_pdf_path,
+		co.`credit_pdf_path`					as co_credit_pdf_path,
+		co.`signature`							as co_signature,
+		co.`optional_request`					as co_optional_request,
+		co.`broadband_asid`						as co_broadband_asid,
+		co.`rfs_date`							as co_rfs_date,
+		co.`user_id`							as co_user_id
+	</sql>
+	
+	<!-- // DEFINITION AREA -->
+	
+	<!-- =================================================================================== -->
+	
+	<!-- SELECT AREA -->
+	
+	<select id="selectCustomerInvoicesBalanceByCidAndStatus" resultType="double">
+		select sum(balance) from tm_customer_invoice where customer_id = #{0} 
+	</select>
+	
+	<!-- select customer invoice page -->
+	<select id="selectCustomerInvoicesByPage" parameterType="Page" resultType="CustomerInvoice">
+		select * from tm_customer_invoice 
+		<include refid="pageWhere"/>
+		<if test="params.orderby != null">${params.orderby}</if>
+		limit #{pageOffset}, #{pageSize}
+	</select>
+	
+	<!-- select customer invoice sum -->
+	<select id="selectCustomerInvoicesSum" parameterType="Page" resultType="int">
+		select count(*) from tm_customer_invoice 
+		<include refid="pageWhere"/>
+	</select>
+	
+	<!-- select customer invoice by invoice_id -->
+	<select id="selectCustomerInvoiceById" parameterType="int" resultType="CustomerInvoice">
+		SELECT * FROM `tm_customer_invoice` WHERE id=#{0}
+	</select>
+	
+	<!-- select customer invoice file path by invoice_id -->
+	<select id="selectCustomerInvoiceFilePathById" parameterType="int" resultType="String">
+		SELECT invoice_pdf_path FROM `tm_customer_invoice` WHERE id=#{0}
+	</select>
+	
+	<!-- select customer invoice by some -->
+	<select id="selectCustomerInvoice" parameterType="CustomerInvoice" resultType="CustomerInvoice">
+		SELECT * FROM `tm_customer_invoice`
+		<include refid="customerInvoiceWhere"/>
+	</select>
+	
+	<select id="selectCustomerInvoices" parameterType="CustomerInvoice" resultType="CustomerInvoice">
+		SELECT * FROM `tm_customer_invoice`
+		<include refid="customerInvoiceWhere"/>
+	</select>
+	
+	<!-- select customer invoice last_invoice_id by id -->
+	<select id="selectInvoiceWithLastInvoiceIdById" parameterType="int" resultMap="selectInvoiceWithLastInvoiceIdByIdResultMap">
+		SELECT
+		<include refid="customerInvoiceColumns"/>,
+		<include refid="customerLastInvoiceColumns"/>,
+		<include refid="customerColumns"/>
+		FROM `tm_customer_invoice` as i
+		left join tm_customer_invoice as li on li.id = i.last_invoice_id
+		left join tm_customer as c on c.id = i.customer_id
+		WHERE i.id=#{0};
+	</select>
+	
+	<resultMap id="selectInvoiceWithLastInvoiceIdByIdResultMap" type="CustomerInvoice">
+		<id property="id" column="i_id" />
+		<result property="invoice_serial" column="i_invoice_serial" />
+		<result property="create_date" column="i_create_date" />
+		<result property="due_date" column="i_due_date" />
+		<result property="final_payable_amount" column="i_final_payable_amount" />
+		<result property="amount_payable" column="i_amount_payable" />
+		<result property="amount_paid" column="i_amount_paid" />
+		<result property="balance" column="i_balance" />
+		<result property="status" column="i_status" />
+		<result property="memo" column="i_memo" />
+		<result property="invoice_pdf_path" column="i_invoice_pdf_path" />
+		<result property="paid_date" column="i_paid_date" />
+		<result property="paid_type" column="i_paid_type" />
+		<result property="last_invoice_id" column="i_last_invoice_id" />
+		<result property="payment_status" column="i_payment_status" />
+		<result property="original_order_id" column="i_original_order_id" />
+		<result property="original_customer_id" column="i_original_customer_id" />
+		<result property="invoice_type" column="i_invoice_type" />
+		<result property="chorus_calling_credit" column="i_chorus_calling_credit" />
+		<result property="chorus_calling_charge" column="i_chorus_calling_charge" />
+		<result property="nca_calling_credit" column="i_nca_calling_credit" />
+		<result property="nca_calling_charge" column="i_nca_calling_charge" />
+		<result property="vos_calling_credit" column="i_vos_calling_credit" />
+		<result property="vos_calling_charge" column="i_vos_calling_charge" />
+		
+		<association property="customer" javaType="Customer">
+			<id property="id" column="c_id" />
+			<result property="login_name" column="c_login_name" />
+			<result property="password" column="c_password" />
+			<result property="md5_password" column="c_md5_password" />
+			<result property="user_name" column="c_user_name" />
+			<result property="first_name" column="c_first_name" />
+			<result property="last_name" column="c_last_name" />
+			<result property="address" column="c_address" />
+			<result property="email" column="c_email" />
+			<result property="phone" column="c_phone" />
+			<result property="cellphone" column="c_cellphone" />
+			<result property="status" column="c_status" />
+			<result property="invoice_post" column="c_invoice_post" />
+			<result property="register_date" column="c_register_date" />
+			<result property="active_date" column="c_active_date" />
+			<result property="balance" column="c_balance" />
+			<result property="title" column="c_title" />
+			<result property="birth" column="c_birth" />
+			<result property="driver_licence" column="c_driver_licence" />
+			<result property="passport" column="c_passport" />
+			<result property="country" column="c_country" />
+			<result property="company_name" column="c_company_name" />
+			<result property="customer_type" column="c_customer_type" />
+		</association>
+		
+		<association property="customerOrder" javaType="CustomerOrder">
+			<id property="id" column="co_id" />
+			<result property="order_serial" column="co_order_serial" />
+			<result property="customer_id" column="co_customer_id" /> 
+			<result property="order_total_price" column="co_order_total_price" />
+			<result property="order_create_date" column="co_order_create_date" />
+			<result property="order_status" column="co_order_status" />
+			<result property="order_using_start" column="co_order_using_start" />
+			<result property="next_invoice_create_date" column="co_next_invoice_create_date" />
+			<result property="next_invoice_create_date_flag" column="co_next_invoice_create_date_flag" />
+			<result property="order_type" column="co_order_type" />
+			<result property="order_broadband_type" column="co_order_broadband_type" />
+			<result property="svlan" column="co_svlan" />
+			<result property="cvlan" column="co_cvlan" />
+			<result property="transition_provider_name" column="co_transition_provider_name" />
+			<result property="transition_account_holder_name" column="co_transition_account_holder_name" />
+			<result property="transition_account_number" column="co_transition_account_number" />
+			<result property="transition_porting_number" column="co_transition_porting_number" />
+			<result property="hardware_post" column="co_hardware_post" />
+			<result property="order_due" column="co_order_due" />
+			<result property="pstn_count" column="co_pstn_count" />
+			<result property="pstn_rental_amount" column="co_pstn_rental_amount" />
+			<result property="term_period" column="co_term_period" />
+			<result property="pppoe_loginname" column="co_pppoe_loginname" />
+			<result property="pppoe_password" column="co_pppoe_password" />
+			<result property="sale_id" column="co_sale_id" />
+			<result property="order_pdf_path" column="co_order_pdf_path" />
+			<result property="credit_pdf_path" column="co_credit_pdf_path" />
+			<result property="signature" column="co_signature" />
+			<result property="optional_request" column="co_optional_request" />
+			<result property="broadband_asid" column="co_broadband_asid" />
+			<result property="rfs_date" column="co_rfs_date" />
+			<result property="user_id" column="co_user_id" />
+		</association>
+		
+		<association property="lastCustomerInvoice" javaType="CustomerInvoice">
+			<id property="id" column="li_id" />
+			<result property="invoice_serial" column="li_invoice_serial" />
+			<result property="create_date" column="li_create_date" />
+			<result property="due_date" column="li_due_date" />
+			<result property="final_payable_amount" column="li_final_payable_amount" />
+			<result property="amount_payable" column="li_amount_payable" />
+			<result property="amount_paid" column="li_amount_paid" />
+			<result property="balance" column="li_balance" />
+			<result property="status" column="li_status" />
+			<result property="memo" column="li_memo" />
+			<result property="invoice_pdf_path" column="li_invoice_pdf_path" />
+			<result property="paid_date" column="li_paid_date" />
+			<result property="paid_type" column="li_paid_type" />
+			<result property="last_invoice_id" column="li_last_invoice_id" />
+			<result property="payment_status" column="li_payment_status" />
+			<result property="original_customer_id" column="li_original_customer_id" />
+			<result property="original_order_id" column="li_original_order_id" />
+			<result property="invoice_type" column="li_invoice_type" />
+			<result property="chorus_calling_credit" column="li_chorus_calling_credit" />
+			<result property="chorus_calling_charge" column="li_chorus_calling_charge" />
+			<result property="nca_calling_credit" column="li_nca_calling_credit" />
+			<result property="nca_calling_charge" column="li_nca_calling_charge" />
+			<result property="vos_calling_credit" column="li_vos_calling_credit" />
+			<result property="vos_calling_charge" column="li_vos_calling_charge" />
+		</association>
+	</resultMap>
+	
+	<select id="selectCustomerInvoicesByCreateDate" parameterType="CustomerInvoice" resultType="CustomerInvoice">
+		select * from tm_customer_invoice
+		<where>
+			<if test="params.start_date != null and params.end_date != null">
+				CONVERT(create_date, DATE) between CONVERT(#{params.start_date}, DATE) and CONVERT(#{params.end_date}, DATE)
+			</if>
+			<if test="params.month_start_date != null and params.month_end_date != null">
+				DATE_FORMAT(create_date,'%Y-%m') between DATE_FORMAT(#{params.month_start_date},'%Y-%m') and DATE_FORMAT(#{params.month_end_date},'%Y-%m')
+			</if>
+			<if test="params.status != null">and status=#{params.status}</if>
+			<if test="params.status1 != null">and (status=#{params.status1} or status=#{params.status2})</if>
+			<if test="params.status3 != null">and (status=#{params.status3} or status=#{params.status4} or status=#{params.status5})</if>
+			<if test="params.sale_id != null">
+				and order_id IN (
+					select id from tm_customer_order where sale_id=#{params.sale_id}
+				)
+			</if>
+			<if test="params.not_agent !=null">
+				and order_id in(
+					select id from tm_customer_order
+					where order_status='using'
+				)
+			</if>
+			<if test="params.customer_type != null">
+				and order_id in(
+					select id from tm_customer_order
+					where customer_type=#{params.customer_type}
+				)
+			</if>
+			<if test="params.order_in_service == true">
+				and order_id in(
+					select id from tm_customer_order
+					where order_status='using'
+				)
+			</if>
+			<if test="params.order_disconnected == true">
+				and order_id in(
+					select id from tm_customer_order
+					where order_status='disconnected'
+				)
+			</if>
+			<if test="params.prepayment == true">
+				and status='paid' and balance&lt;0
+			</if>
+		</where>
+	</select>
+	
+	<!-- // END SELECT AREA -->
+	<!-- =================================================================================== -->
+	<!-- INSERT AREA -->
+	
+	<insert id="insertCustomerInvoice" parameterType="CustomerInvoice" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `tm_customer_invoice`(
+			`invoice_serial`, `customer_id`, `order_id`, `create_date`,`due_date`, 
+			`final_payable_amount`, `amount_payable`, `amount_paid`, `balance`, `status`, `memo`, `invoice_pdf_path`, 
+			`paid_date`, `paid_type`, `last_invoice_id`, `payment_status`, `original_order_id`,
+			`original_customer_id`, `invoice_type`, `chorus_calling_credit`, `chorus_calling_charge`, `nca_calling_credit`,
+			`nca_calling_charge`, `vos_calling_credit`, `vos_calling_charge`
+			) 
+		VALUES (
+			#{invoice_serial}, #{customer_id}, #{order_id}, #{create_date}, #{due_date},
+			#{final_payable_amount}, #{amount_payable}, #{amount_paid}, #{balance}, #{status}, #{memo}, #{invoice_pdf_path}, 
+			#{paid_date}, #{paid_type}, #{last_invoice_id}, #{payment_status}, #{original_order_id},
+			#{original_customer_id}, #{invoice_type}, #{chorus_calling_credit}, #{chorus_calling_charge}, #{nca_calling_credit},
+			#{nca_calling_charge}, #{vos_calling_credit}, #{vos_calling_charge}
+			)
+	</insert>
+	
+	<!-- // END INSERT AREA -->
+	<!-- =================================================================================== -->
+	<!-- UPDATE AREA -->
+	
+	<update id="updateCustomerInvoice" parameterType="CustomerInvoice">
+		update `tm_customer_invoice`
+		<set>
+			<if test="invoice_serial != null">`invoice_serial`=#{invoice_serial},</if>
+			<if test="customer_id != null">`customer_id`=#{customer_id},</if>
+			<if test="order_id != null">`order_id`=#{order_id},</if>
+			<if test="create_date != null">`create_date`=#{create_date},</if>
+			<if test="due_date != null">`due_date`=#{due_date},</if>
+			<if test="final_payable_amount != null">`final_payable_amount`=#{final_payable_amount},</if>
+			<if test="amount_payable != null">`amount_payable`=#{amount_payable},</if>
+			<if test="amount_paid != null">`amount_paid`=#{amount_paid},</if>
+			<if test="balance != null">`balance`=#{balance},</if>
+			<if test="status != null">`status`=#{status},</if>
+			<if test="memo != null">`memo`=#{memo},</if>
+			<if test="invoice_pdf_path != null">`invoice_pdf_path`=#{invoice_pdf_path},</if>
+			<if test="paid_date != null">`paid_date`=#{paid_date},</if>
+			<if test="paid_type != null">`paid_type`=#{paid_type},</if>
+			<if test="last_invoice_id != null">`last_invoice_id`=#{last_invoice_id},</if>
+			<if test="payment_status != null">`payment_status`=#{payment_status},</if>
+			<if test="original_order_id != null">`original_order_id`=#{original_order_id},</if>
+			<if test="original_customer_id != null">`original_customer_id`=#{original_customer_id},</if>
+			<if test="invoice_type != null">`invoice_type`=#{invoice_type},</if>
+			<if test="chorus_calling_credit != null">`chorus_calling_credit`=#{chorus_calling_credit},</if>
+			<if test="chorus_calling_charge != null">`chorus_calling_charge`=#{chorus_calling_charge},</if>
+			<if test="nca_calling_credit != null">`nca_calling_credit`=#{nca_calling_credit},</if>
+			<if test="nca_calling_charge != null">`nca_calling_charge`=#{nca_calling_charge},</if>
+			<if test="vos_calling_credit != null">`vos_calling_credit`=#{vos_calling_credit},</if>
+			<if test="vos_calling_charge != null">`vos_calling_charge`=#{vos_calling_charge},</if>
+			<if test="params.customer_id_null == 'true'">`customer_id`=null,</if>
+			<if test="params.order_id_null == 'true'">`order_id`=null,</if>
+			<if test="params.original_customer_id_null == 'true'">`original_customer_id`=null,</if>
+			<if test="params.original_order_id_null == 'true'">`original_order_id`=null,</if>
+			<if test="params.invoice_type_null == 'true'">`invoice_type`=null</if>
+		</set>
+		<where>
+			<if test="params.id != null">id = #{params.id}</if>
+			<if test="params.customer_id != null">and customer_id = #{params.customer_id}</if>
+		</where>
+	</update>
+	
+	<!-- // END UPDATE AREA -->
+	<!-- =================================================================================== -->
+	<!-- DELETE AREA -->
+	<delete id="deleteCustomerInvoiceById" parameterType="int">
+		DELETE FROM tm_customer_invoice WHERE id = #{0}
+	</delete>
+	
+	<delete id="deleteCustomerInvoiceByCustomerId" parameterType="int">
+		DELETE FROM tm_customer_invoice WHERE customer_id = #{0}
+	</delete>
+	
+	<delete id="deleteCustomerInvoiceByRepeat">
+		DELETE FROM `tm_customer_invoice` WHERE id NOT IN (
+		    SELECT a.id FROM (
+		    	SELECT id FROM `tm_customer_invoice` 
+				GROUP BY customer_id, order_id, create_date, amount_payable, status
+		    ) a
+		)
+	</delete>
+	<!-- // END DELETE AREA -->
+
+	
+</mapper>

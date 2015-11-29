@@ -1,0 +1,145 @@
+<div class="panel panel-success">
+	<div class="panel-heading">
+		<h4 class="panel-title">
+		<. if (select_plan_type == 'VDSL' && (sale_id == '10023' || sale_id == '20023')){.>
+			Promotion VDSL Plan
+		<.} else {.>
+			Select One Plan
+		<.}.>
+		</h4>
+	</div>
+	<div class="panel-body">
+		<!-- Nav tabs -->
+		<.if (select_plan_type == 'ADSL') {.>
+		<ul class="nav nav-tabs" id="plans">
+			<li class="active">
+				<a href="#homeline" data-toggle="tab" style="padding: 6px;"><span class="phone"></span> <span style="font-size:24px" class="hidden-xs">Homeline Included</span></a>
+			</li>
+			<li>
+				<a href="#naked" data-toggle="tab" style="padding: 6px;"><span class="without_phone"></span> <span style="font-size:24px" class="hidden-xs">Naked Broadband</span></a>
+			</li>
+		</ul>
+		<.} else if (select_plan_type == 'VDSL') {
+		
+			if (sale_id != '10023' && sale_id != '20023') {.>
+		<ul class="nav nav-tabs" id="plans">
+			<li class="active">
+				<a href="#homeline" data-toggle="tab" style="padding: 6px;"><span class="phone"></span> <span style="font-size:24px" class="hidden-xs">Homeline Included</span></a>
+			</li>
+			<li>
+				<a href="#naked" data-toggle="tab" style="padding: 6px;"><span class="without_phone"></span> <span style="font-size:24px" class="hidden-xs">Naked Broadband</span></a>
+			</li>
+		</ul>
+		<.
+			}
+		} else if (select_plan_type == 'UFB') {.>
+		<ul class="nav nav-tabs" id="plans">
+			<li class="active">
+				<a href="#homeline" data-toggle="tab" style="padding: 6px;"><span class="phone"></span> <span style="font-size:24px" class="hidden-xs">Homeline Included</span></a>
+			</li>
+			<li>
+				<a href="#naked" data-toggle="tab" style="padding: 6px;"><span class="without_phone"></span> <span style="font-size:24px" class="hidden-xs">Naked Broadband</span></a>
+			</li>
+		</ul>
+		<.}.>
+		
+		<!-- Tab panes -->
+		<div class="tab-content">
+			<div class="tab-pane fade in active" id="homeline">
+			<. if (plansClothed != null && plansClothed.length > 0) { .>
+				<div class="row">
+				<. for (var i = 0, len = plansClothed.length; i < len; i++) { 
+					var plan = plansClothed[i];
+					var count = len > 2 ? 4 : 6;
+				.> 
+					<div class="col-md-<.=count.>" style="margin-top:10px;">
+						<div data-plan-id="<.=plan.id.>" 
+							data-plan_sort="<.=plan.plan_sort.>"
+						
+							class="alert alert-success" style="cursor: pointer;margin-bottom:0;"><!-- alert alert-success -->
+							<p class="text-center" style="font-weight:bold;font-size: 25px;">
+								<.=plan.data_flow < 0 ? 'Unlimited' : plan.data_flow + ' GB'.>
+							</p>
+							<p class="text-center" style="font-weight:bold;font-size: 25px;">
+								<. if (select_plan_type == 'VDSL' && sale_id == '10023'){.>
+									<.=plan.plan_price * 12.> / year
+								<.} else {.>
+									<.=plan.plan_price.> / <.=select_plan_group=='plan-topup'?'week':'month'.>
+								<.}.>
+								
+							</p>
+							<p class="text-center" style="font-weight:bold;font-size: 25px;">
+								<span data-icon style="border: 1px solid; padding: 6px 8px; border-radius: 24px; background-color: #fff;">
+									<span class="glyphicon glyphicon-ok"></span>
+								</span>
+							</p>
+						</div>
+					</div>	
+				<.}.>
+				</div>
+			<.} else { .>
+				<div class="alert alert-warning" style="margin-top:10px;">
+					No records are not found.
+				</div>
+			<.}.>
+			</div>
+			<div class="tab-pane fade" id="naked">
+			<. if (plansNaked != null && plansNaked.length > 0) { .>
+				<div class="row">
+				<. for (var i = 0, len = plansNaked.length; i < len; i++) { 
+					var plan = plansNaked[i];
+					var count = len > 2 ? 4 : 6;
+				.> 
+					<div class="col-md-<.=count.>" style="margin-top:10px;">
+						<div data-plan-id="<.=plan.id.>" 
+							data-plan_sort="<.=plan.plan_sort.>"
+							
+							class="alert alert-success" style="cursor: pointer;margin-bottom:0;">
+							<p class="text-center" style="font-weight:bold;font-size: 25px;">
+								<.=plan.data_flow < 0 ? 'Unlimited' : plan.data_flow + ' GB'.>
+							</p>
+							<p class="text-center" style="font-weight:bold;font-size: 25px;">
+								<.=plan.plan_price.> / <.=select_plan_group=='plan-topup'?'week':'month'.>
+							</p>
+							<p class="text-center" style="font-weight:bold;font-size: 25px;">
+								<span data-icon style="border: 1px solid; padding: 6px 8px; border-radius: 24px; background-color: #fff;">
+									<span class="glyphicon glyphicon-ok"></span>
+								</span>
+							</p>
+						</div>
+					</div>	
+				<.}.>
+				</div>
+			<.} else { .>
+				<div class="alert alert-warning" style="margin-top:10px;">
+					No records are not found.
+				</div>
+			<.}.>
+			</div>
+		</div>
+	</div>
+	
+	<hr>
+	
+	<!-- promotion code -->
+	<div class="panel-body">
+		<div class="well">
+			<p>This site is made possible almost entirely by people like you--people looking for a great deal. </p>
+			<p>If you find a coupon or promotion code you think would benefit someone else please post it to the site.</p>
+		</div>
+		<div class="row">
+			<div class="col-md-4">
+				<div class="form-group">
+					<div class="col-md-12">
+						<input type="text" class="form-control" id="promotion_code" placeholder="Please put your promotion code" data-error-field/>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-2">
+				<a href="javascript:void(0);" class="btn btn-success btn-block ladda-button" data-style="zoom-in" id="code_apply">Apply</a>
+			</div>
+			<div class="col-md-6" id="promotion_content"></div>
+		</div>
+	</div>
+	
+</div>

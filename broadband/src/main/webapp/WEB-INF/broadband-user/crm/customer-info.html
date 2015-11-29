@@ -1,0 +1,671 @@
+<!-- Customer Basic Details -->
+<form id="customerEditForm" class="form-horizontal">
+	<h4 class="text-success">
+		Customer Identity&nbsp;
+		<a href="<.= ctx .>/broadband-user/crm/plans/new-order/<.= customer.id .>" class="btn btn-success btn-xs" target="_blank" >Order New</a>
+		&nbsp;&nbsp;
+		<. if(user_role == 'system-developer' || user_name == 'Cathy') { .>
+		<a href="javascript:void(0);" data-name="migrate_customer_btn" class="btn btn-success btn-xs" target="_blank" >Migrate Another Customer's Details</a>
+		<. } .>
+	</h4>
+	<hr/>
+	<div class="form-group">
+		<label class="control-label col-md-4">Customer ID</label>
+		<div class="col-md-4">
+			<p class="form-control-static"><.= customer.id .></p>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<label class="control-label col-md-4">Identity Type</label>
+		<div class="col-md-2">
+			<select name="identity_type" id="identity_type" class="selectpicker show-tick form-control">
+			<. var types = ['Driver Licence', 'Passport', '18+'];
+				for(var i = 0; i < types.length; i++) {
+					if (customer.identity_type == types[i])
+			.> 
+				<option value="<.=types[i].>" selected="selected"><.=types[i].></option>
+			<. 		else .>
+				<option value="<.=types[i].>"><.=types[i].></option>
+			<. 	}.>
+			</select>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<label for="identity_number" class="control-label col-md-4">Identity Number</label>
+		<div class="col-md-4">
+			<input type="text" id="identity_number" name="identity_number" value="<.= customer.identity_number .>" class="form-control" data-error-field data-placement="right"/>
+		</div>
+	</div>
+		
+	<!-- customer address -->
+	<hr/>
+	<h4 class="text-success">Customer Address</h4>
+	<hr/>
+	
+	<div class="form-group">
+		<label for="address" class="control-label col-md-4">Customer Address</label>
+		<div class="col-md-8">
+			<input type="text" id="address" name="address" value="<.= customer.address .>" class="form-control" data-error-field data-placement="top"/>
+		</div>
+	</div>
+
+	<!-- customer account -->
+	<hr/>
+	<h4 class="text-success">Customer Account</h4>
+	<hr/>
+		
+	<div class="form-group">
+		<label for="cellphone" class="control-label col-md-4">Customer Mobile</label>
+		<div class="col-md-4">
+			<input type="text" id="cellphone" name="cellphone" value="<.= customer.cellphone .>"class="form-control" placeholder="e.g.: 0210800123" data-error-field />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="email" class="control-label col-md-4">Customer Email</label>
+		<div class="col-md-4">
+			<input type="text" id="email" name="email" value="<.= customer.email .>" class="form-control" placeholder="e.g.: welcome@cyberpark.co.nz" data-error-field/>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="password" class="control-label col-md-4">Customer Password</label>
+		<div class="col-md-4">
+			<input type="text" id="password" name="password" value="<.= customer.password .>" class="form-control" data-error-field/>
+		</div>
+	</div>
+
+	<!-- Personal Information -->
+	<hr/>
+	<h4 class="text-success">Personal Information</h4>
+	<hr/>
+		
+	<div class="form-group">
+		<label for="title" class="control-label col-md-4">Title</label>
+		<div class="col-md-2">
+			<select name="title" id="title" class="selectpicker show-tick form-control">
+			<. var types = ['Mr', 'Mrs', 'Ms'];
+				for(var i = 0; i < types.length; i++) {
+					if (customer.title == types[i])
+			.> 
+				<option value="<.=types[i].>" selected="selected"><.=types[i].></option>
+			<. 		else .>
+				<option value="<.=types[i].>"><.=types[i].></option>
+			<. 	}.>
+			</select>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="first_name" class="control-label col-md-4">First name</label>
+		<div class="col-md-4">
+			<input type="text" id="first_name" name="first_name" value="<.= customer.first_name .>" class="form-control" data-error-field />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="last_name" class="control-label col-md-4">Last name</label>
+		<div class="col-md-4">
+			<input type="text" id="last_name" name="last_name" value="<.= customer.last_name .>" class="form-control" data-error-field />
+		</div>
+	</div>
+	
+	
+	<!-- Other Information -->
+
+	<hr/>
+	<h4 class="text-success">Other Information</h4>
+	<hr/>
+	
+	<div class="form-group">
+		<div class="col-md-2 col-md-offset-4">
+			<a class="btn btn-info btn-xs" data-name="eliminate_credit_btn">Eliminate Credit</a>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="balance" class="control-label col-md-4">Credit</label>
+		<div class="col-md-2">
+	      <p class="form-control-static"><.=Number(customer.balance).toFixed(2).></p>
+		</div>
+		<div class="col-md-3">
+			<. if(user_role == 'system-developer' || user_role == 'administrator' || user_role == 'accountant') { .>
+			<div class="btn-group">
+				<button type="button" class="btn btn-primary btn-xs" data-name="topup_account_credit_btn">Make Defrayment</button>
+				<button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					<li><a href="javascript:void(0);" data-name="topup_account_credit" data-way="credit-card" ><span class="glyphicon glyphicon-credit-card"></span>&nbsp;&nbsp;Credit Card</a></li>
+					<li><a href="javascript:void(0);" data-name="topup_account_credit" data-way="a2a" ><span class="glyphicon glyphicon-transfer"></span>&nbsp;&nbsp;Account2Account</a></li>
+					<li><a href="javascript:void(0);" data-name="topup_account_credit" data-way="ddpay" ><span class="glyphicon glyphicon-share-alt"></span>&nbsp;&nbsp;DDPay</a></li>
+					<li><a href="javascript:void(0);" data-name="topup_account_credit" data-way="cash" ><span class="glyphicon glyphicon-usd"></span>&nbsp;&nbsp;Cash</a></li>
+					<li><a href="javascript:void(0);" data-name="topup_account_credit" data-way="cyberpark-credit" ><span class="glyphicon glyphicon-star-empty"></span>&nbsp;&nbsp;CyberPark Credit</a></li>
+					<li><a href="javascript:void(0);" data-name="topup_account_credit" data-way="voucher" ><span class="glyphicon glyphicon-tags"></span>&nbsp;&nbsp;Voucher</a></li>
+				</ul>
+			</div>
+			<. } .>
+		</div>
+		<div class="col-md-2">
+			<button type="button" class="btn btn-primary btn-xs" data-name="topup_account_credit_by_dps">Topup By DPS</button>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="control-label col-md-4">Register Date</label>
+		<div class="col-md-4">
+			<p class="form-control-static"><strong><.= customer.register_date_str .></strong></p>
+		</div>
+	</div>
+	
+	<!-- Other options -->
+	<hr/>
+	<h4 class="text-success">Other Options</h4>
+	<hr/>
+	
+	<div class="form-group">
+		<label for="status" class="control-label col-md-4">Status</label>
+		<div class="col-md-4">
+			<select id="status" name="status" class="selectpicker show-tick form-control">
+				<. var statusArr = ['active','disabled']; .>
+				<. for(var s=0; s<statusArr.length; s++){ .>
+					<. if(statusArr[s]==customer.status){ .>
+				<option value="<.= statusArr[s] .>" selected="selected"><.= statusArr[s] .></option>
+					<. } else { .>
+				<option value="<.= statusArr[s] .>"><.= statusArr[s] .></option>
+					<. } .>
+				<. } .>
+			</select>
+		</div>
+	</div>
+	
+	<!-- button -->
+	<hr/>
+	<div class="form-group">
+		<div class="col-md-4"></div>
+		<div class="col-md-3">
+			<a href="javascript:void(0);" class="btn btn-success btn-lg btn-block" id="updateCustomer" >Update Customer</a>
+		</div>
+		<div class="col-md-4">
+			<. if(user_role == 'system-developer'){ .>
+				<a class="btn btn-danger  btn-lg btn-block" data-toggle="modal" data-target="#deleteCustomerModal">Delete customer and related information</a>
+			<. } .>
+		</div>
+	</div>
+	
+	
+	<!-- Credit Card -->
+	<. if((user_role == 'accountant' || user_role == 'system-developer')){ .>
+	<hr/>
+	<h4 class="text-success">
+		Credit Card&nbsp;&nbsp;
+		<a href="javascript:void(0);" class="btn btn-success btn-xs" id="add_credit_card_btn" >Add Credit Card</a>
+	</h4>
+	<hr/>
+	
+		<. for(var cCards=0; cCards<customerCredits.length; cCards++){ .>
+			<. var cc = customerCredits[cCards]; .>
+	<div class="form-group">
+		<label for="card_number_<.= cc.id .>" class="control-label col-md-2">Card Number</label>
+		<div class="col-md-3">
+			<input type="text" id="card_number_<.= cc.id .>" value="<.= cc.card_number .>" class="form-control" data-error-field />
+		</div>
+		<label for="holder_name_<.= cc.id .>" class="control-label col-md-1">Name</label>
+		<div class="col-md-3">
+			<input type="text" id="holder_name_<.= cc.id .>" value="<.= cc.holder_name .>" class="form-control" data-error-field />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="card_type_<.= cc.id .>" class="control-label col-md-2">Card Type</label>
+		<div class="col-md-2">
+			<select id="card_type_<.= cc.id .>" class="selectpicker show-tick form-control">
+				<. var cardTypes = ['VISA','MASTERCARD']; .>
+				<. for(var ct=0; ct<cardTypes.length; ct++){ .>
+					<. if(cardTypes[ct]==cc.card_type){ .>
+				<option value="<.= cardTypes[ct] .>" selected="selected"><.= cardTypes[ct] .></option>
+					<. } else { .>
+				<option value="<.= cardTypes[ct] .>" ><.= cardTypes[ct] .></option>
+					<. } .>
+				<. } .>
+			</select>
+		</div>
+		<label for="security_code_<.= cc.id .>" class="control-label col-md-2">Security Code</label>
+		<div class="col-md-2">
+			<input type="text" id="security_code_<.= cc.id .>" value="<.= cc.security_code .>" class="form-control" data-error-field />
+		</div>
+		<label for="expiry_date_<.= cc.id .>" class="control-label col-md-2">Expiry Date</label>
+		<div class="col-md-2">
+			<input type="text" id="expiry_date_<.= cc.id .>" value="<.= cc.expiry_date .>" class="form-control" data-error-field />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="cc_order_ids_<.= cc.id .>" class="control-label col-md-2">Order Ids</label>
+		<div class="col-md-10">
+			<textarea id="cc_order_ids_<.= cc.id .>" rows="5" class="form-control" data-error-field ><.= cc.order_ids .></textarea>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-md-12">
+			<a href="javascript:void(0);" id="<.= cc.id .>" class="btn btn-danger btn-xs" data-name="delete_credit_card_btn" >Delete Credit Card</a>
+			<a href="javascript:void(0);" id="<.= cc.id .>" class="btn btn-success btn-xs pull-right" data-name="update_credit_card_btn" >Update Credit Card</a>
+		</div>
+	</div>
+	<hr/>
+		<. } .>
+	
+	<. } .>
+	
+	
+	<!-- Credit Card -->
+	<. if((user_role == 'accountant' || user_role == 'system-developer')){ .>
+	<hr/>
+	<h4 class="text-success">
+		DDPay&nbsp;&nbsp;
+		<a href="javascript:void(0);" class="btn btn-success btn-xs" id="add_ddpay_btn" >Add DDPay</a>
+	</h4>
+	<hr/>
+	
+		<. for(var cddpays=0; cddpays<customerDDPays.length; cddpays++){ .>
+			<. var cddpay = customerDDPays[cddpays]; .>
+	<div class="form-group">
+		<label for="account_number" class="control-label col-md-2">Account Number</label>
+		<div class="col-md-3">
+			<input type="text" id="account_number_<.= cddpay.id .>" value="<.= cddpay.account_number .>" class="form-control" data-error-field />
+		</div>
+		<label for="account_name" class="control-label col-md-2">Account Name</label>
+		<div class="col-md-3">
+			<input type="text" id="account_name_<.= cddpay.id .>" value="<.= cddpay.account_name .>" class="form-control" data-error-field />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="dd_order_ids_<.= cddpay.id .>" class="control-label col-md-2">Order Ids</label>
+		<div class="col-md-10">
+			<textarea id="dd_order_ids_<.= cddpay.id .>" rows="5" class="form-control" data-error-field ><.= cddpay.order_ids .></textarea>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-md-12">
+			<a href="javascript:void(0);" id="<.= cddpay.id .>" class="btn btn-danger btn-xs" data-name="delete_ddpay_btn" >Delete DDPay</a>
+			<a href="javascript:void(0);" id="<.= cddpay.id .>" class="btn btn-success btn-xs pull-right" data-name="update_ddpay_btn" >Update DDPay</a>
+		</div>
+	</div>
+	<hr/>
+		<. } .>
+	
+	<. } .>
+</form>
+	
+
+<!-- Delete Customer Modal -->
+<form class="form-horizontal">
+	<div class="modal fade" id="deleteCustomerModal" tabindex="-1" role="dialog" aria-labelledby="deleteCustomerModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3 class="modal-title" id="deleteCustomerModalLabel">
+						<strong class="text-danger">Delete Customer ( Permanent!!! )</strong>
+					</h3>
+				</div>
+				<div class="modal-body">
+					<p class="text-right">
+						<strong class="text-danger">
+							This operation is irreversible, be seriously careful!<br /> 
+							Info related with this customer will be disappeared!<br />
+						</strong> 
+					</p>
+					<p class="text-right">
+						<strong>
+							personal informations<br />
+							related orders with records<br />
+							related invoices with records<br />
+							related transaction records<br />
+						</strong>
+					</p>
+				</div>
+				<div class="modal-footer">
+					<a href="<.=ctx.>/broadband-user/crm/customer/remove/<.= customer.id .>" class="btn btn-warning btn-lg">Delete</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<!-- confirmTopupAccountCreditModal -->
+<div class="modal fade" id="confirmTopupAccountCreditModal" tabindex="-1" role="dialog" aria-labelledby="confirmTopupAccountCreditModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="confirmPayWayModalLabel">
+					<strong data-name="confirm_topup_account_credit_modal_title"></strong>
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group" style="display:none;" data-name="defray_amount_input">
+					<label for="defray_amount" class="control-label col-md-6">Defray Amount:</label>
+					<div class="col-md-6">
+						<input name="defray_amount" class="form-control input-sm" type="text" placeholder="Defray Amount"/>
+					</div>
+				</div>
+				<div class="form-group" style="display:none;" data-name="voucher_pin_number_input">
+					<label for="pin_number" class="control-label col-md-6">Pin Number:</label>
+					<div class="col-md-6">
+						<input id="pin_number" name="pin_number" class="form-control input-sm" type="text" placeholder="Pin Number"/>
+					</div>
+				</div>
+				<br/>
+				<div class="form-group">
+					<p data-name="confirm_topup_account_credit_modal_content">
+						<strong></strong>
+					</p>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<a href="javascript:void(0);" class="btn btn-success col-md-12" data-name="confirm_topup_account_credit_modal_btn" data-dismiss="modal"></a>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
+<!-- confirmTopupAccountCreditByDPSModal -->
+<form class="form-horizontal" action="<.= ctx .>/broadband-user/crm/customer/topup/account-credit">
+	<input type="hidden" name="customer_id" value="<.= customer.id .>" /> 
+	<div class="modal fade" id="confirmTopupAccountCreditByDPSModal" tabindex="-1" role="dialog" aria-labelledby="confirmTopupAccountCreditByDPSModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">
+						<strong>Topup Account Credit By DPS</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="topup_amount" class="control-label col-md-6">Topup Amount:</label>
+						<div class="col-md-6">
+							<input name="topup_amount" class="form-control input-sm" type="text" placeholder="Topup Amount"/>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-success col-md-12">Continue</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+</form>
+
+
+
+<!-- addCreditCardModal -->
+<form class="form-horizontal">
+	<div class="modal fade" id="addCreditCardModal" tabindex="-1" role="dialog" aria-labelledby="addCreditCardModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">
+						<strong>Add Credit Card</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="card_type" class="control-label col-md-4">Card Type:</label>
+						<div class="col-md-4">
+							<select data-name="card_type" class="selectpicker show-tick form-control">
+								<option value="VISA">VISA</option>
+								<option value="MASTERCARD">MASTERCARD</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="card_number" class="control-label col-md-4">Card Number:</label>
+						<div class="col-md-4">
+							<input data-name="card_number" class="form-control input-sm" type="text" placeholder="Number On Card"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="holder_name" class="control-label col-md-4">Holder Name:</label>
+						<div class="col-md-4">
+							<input data-name="holder_name" class="form-control input-sm" type="text" placeholder="Name On Card"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="security_code" class="control-label col-md-4">Security Code:</label>
+						<div class="col-md-3">
+							<input data-name="security_code" class="form-control input-sm" type="text" placeholder="Behind The Card"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="expiry_date" class="control-label col-md-4">Expiry Date:</label>
+						<div class="col-md-4">
+							<input data-name="expiry_date" class="form-control input-sm" type="text" placeholder="YYYY-MM on Card"/>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<a data-name="add_credit_card_modal_btn" class="btn btn-success col-md-12" data-dismiss="modal">Confirm</a>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+</form>
+
+
+<!-- editCreditCardModal -->
+<form class="form-horizontal">
+	<div class="modal fade" id="editCreditCardModal" tabindex="-1" role="dialog" aria-labelledby="editCreditCardModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">
+						<strong>Edit Credit Card</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<p>
+						Update This Credit Card Information?
+					</p>
+				</div>
+				<div class="modal-footer">
+					<a data-name="edit_credit_card_modal_btn" class="btn btn-warning col-md-12" data-dismiss="modal">Confirm</a>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+</form>
+
+
+
+<!-- deleteCreditCardModal -->
+<form class="form-horizontal">
+	<div class="modal fade" id="deleteCreditCardModal" tabindex="-1" role="dialog" aria-labelledby="deleteCreditCardModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">
+						<strong>Delete Credit Card</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<p>
+						Remove This Credit Card Information?
+					</p>
+				</div>
+				<div class="modal-footer">
+					<a data-name="delete_credit_card_modal_btn" class="btn btn-danger col-md-12" data-dismiss="modal">Confirm</a>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+</form>
+
+
+
+<!-- addDDPayModal -->
+<form class="form-horizontal">
+	<div class="modal fade" id="addDDPayModal" tabindex="-1" role="dialog" aria-labelledby="addDDPayModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">
+						<strong>Add DDPay</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="account_number" class="control-label col-md-4">Account Number:</label>
+						<div class="col-md-4">
+							<input data-name="account_number" class="form-control input-sm" type="text" placeholder="Number On Paper"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="account_name" class="control-label col-md-4">Account Name:</label>
+						<div class="col-md-4">
+							<input data-name="account_name" class="form-control input-sm" type="text" placeholder="Name On Paper"/>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<a data-name="add_ddpay_modal_btn" class="btn btn-success col-md-12" data-dismiss="modal">Confirm</a>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+</form>
+
+
+<!-- editDDPayModal -->
+<form class="form-horizontal">
+	<div class="modal fade" id="editDDPayModal" tabindex="-1" role="dialog" aria-labelledby="editDDPayModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">
+						<strong>Edit DDPay</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<p>
+						Update This DDPay Information?
+					</p>
+				</div>
+				<div class="modal-footer">
+					<a data-name="edit_ddpay_modal_btn" class="btn btn-warning col-md-12" data-dismiss="modal">Confirm</a>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+</form>
+
+
+
+<!-- deleteDDPayModal -->
+<form class="form-horizontal">
+	<div class="modal fade" id="deleteDDPayModal" tabindex="-1" role="dialog" aria-labelledby="deleteDDPayModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">
+						<strong>Delete DDPay</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<p>
+						Remove This DDPay Information?
+					</p>
+				</div>
+				<div class="modal-footer">
+					<a data-name="delete_ddpay_modal_btn" class="btn btn-danger col-md-12" data-dismiss="modal">Confirm</a>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+</form>
+
+
+<!-- EliminateAccountCreditModal -->
+<div class="modal fade" id="eliminateAccountCreditModal" tabindex="-1" role="dialog" aria-labelledby="eliminateAccountCreditModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">
+					<strong>Eliminate Account Credit</strong>
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label for="eliminate_amount" class="control-label col-md-6">Eliminate Amount:</label>
+					<div class="col-md-6">
+						<input name="eliminate_amount" class="form-control input-sm" type="text" placeholder="Eliminate Amount"/>
+					</div>
+				</div>
+				<br/>
+			</div>
+			<div class="modal-footer">
+				<a data-name="eliminate_amount_btn" class="btn btn-success btn-xs col-md-12" data-dismiss="modal">Confirm</a>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
+<!-- MigrateCustomerModal -->
+<div class="modal fade" id="migrateCustomerModal" tabindex="-1" role="dialog" aria-labelledby="migrateCustomerModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">
+					<strong>Migrate Customer</strong>
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label for="customer_id" class="control-label col-md-6" style="text-align:right;">Customer Id</label>
+					<div class="col-md-6">
+						<input id="customer_id" name="migrate_customer_id" class="form-control input-sm" type="text" placeholder="Customer Id" style="height:26px; padding:0 10px;"/>
+					</div>
+				</div>
+				<br/>
+			</div>
+			<div class="modal-footer">
+				<a data-name="migrate_customer_modal_btn" class="btn btn-success btn-xs col-md-12" data-dismiss="modal">Confirm</a>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

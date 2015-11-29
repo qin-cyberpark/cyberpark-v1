@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- DEFINITION AREA --><!-- // DEFINITION AREA -->
+<!-- =================================================================================== -->
+<!-- SELECT AREA --><!-- // END SELECT AREA -->
+<!-- =================================================================================== -->
+<!-- INSERT AREA --><!-- // END INSERT AREA -->
+<!-- =================================================================================== -->
+<!-- UPDATE AREA --><!-- // END UPDATE AREA -->
+<!-- =================================================================================== -->
+<!-- DELETE AREA --><!-- // END DELETE AREA -->
+
+
+<mapper namespace="com.tm.broadband.mapper.CustomerMapper">
+
+	<!-- DEFINITION AREA -->
+
+	<sql id="customerColumns">
+		c.`id` 					as c_id
+		, c.`login_name` 		as c_login_name
+		, c.`password` 			as c_password
+		, c.`md5_password` 		as c_md5_password
+		, c.`user_name` 		as c_user_name
+		, c.`first_name` 		as c_first_name
+		, c.`last_name` 		as c_last_name
+		, c.`address` 			as c_address
+		, c.`email` 			as c_email
+		, c.`phone` 			as c_phone
+		, c.`cellphone` 		as c_cellphone
+		, c.`status` 			as c_status
+		, c.`invoice_post` 		as c_invoice_post
+		, c.`register_date` 	as c_register_date
+		, c.`active_date` 		as c_active_date
+		, c.`balance` 			as c_balance
+		, c.`title`				as c_title
+		, c.`birth`				as c_birth
+		, c.`driver_licence`	as c_driver_licence
+		, c.`passport`			as c_passport
+		, c.`country`			as c_country
+		, c.`company_name`		as c_company_name
+		, c.`identity_type`		as c_identity_type
+		, c.`identity_number` 	as c_identity_number
+		, c.`result`			as c_result
+		, c.`customer_type`		as c_customer_type
+	</sql>
+	<resultMap type="Customer" id="customerResultMap">
+		<id property="id" column="c_id" />
+		<result property="login_name" column="c_login_name" />
+		<result property="password" column="c_password" />
+		<result property="md5_password" column="c_md5_password" />
+		<result property="user_name" column="c_user_name" />
+		<result property="first_name" column="c_first_name" />
+		<result property="last_name" column="c_last_name" />
+		<result property="address" column="c_address" />
+		<result property="email" column="c_email" />
+		<result property="phone" column="c_phone" />
+		<result property="cellphone" column="c_cellphone" />
+		<result property="status" column="c_status" />
+		<result property="invoice_post" column="c_invoice_post" />
+		<result property="register_date" column="c_register_date" />
+		<result property="active_date" column="c_active_date" />
+		<result property="balance" column="c_balance" />
+		<result property="title" column="c_title" />
+		<result property="birth" column="c_birth" />
+		<result property="driver_licence" column="c_driver_licence" />
+		<result property="passport" column="c_passport" />
+		<result property="country" column="c_country" />
+		<result property="company_name" column="c_company_name" />
+		<result property="identity_type" column="c_identity_type" />
+		<result property="identity_number" column="c_identity_number" />
+		<result property="result" column="c_result" />
+		<result property="customer_type" column="c_customer_type" />
+	</resultMap>
+	
+	<sql id="customerWhere">
+		<where>
+			<choose>
+				<when test="params.where == 'query_by_start_end_reg_date'">
+					c.register_date BETWEEN #{params.register_date1} AND #{params.register_date2}
+				</when>
+				<when test="params.where == 'when_login'">
+					(c.cellphone = #{params.cellphone} or c.email = #{params.email})
+					and c.password = #{params.password}
+					and c.status = #{params.status}
+				</when>
+				<when test="params.where == 'when_login_by_id_md5pass'">
+					c.id = #{params.id}
+					and c.md5_password = #{params.md5_password}
+					and c.status = #{params.status}
+				</when>
+				<when test="params.where == 'query_forgotten_password_email'">
+					c.email = #{params.email} and c.status = #{params.status}
+				</when>
+				<when test="params.where == 'query_forgotten_password_cellphone'">
+					c.cellphone = #{params.cellphone} and c.status = #{params.status}
+				</when>
+				<when test="params.where == 'query_order_status'">
+					<if test="params.status != null">c.status = #{params.status}</if>
+					<if test="params.order_status != null">and co.order_status = #{params.order_status}</if>
+				</when>
+				<when test="params.where == 'query_exist_customer_by_id'">
+					<if test="params.id != null">c.id = #{params.id}</if>
+				</when>
+				<when test="params.where == 'query_exist_customer_by_mobile'">
+					<if test="params.cellphone != null">c.cellphone = #{params.cellphone}</if>
+				</when>
+				<when test="params.where == 'query_exist_customer_by_email'">
+					<if test="params.email != null">c.email = #{params.email}</if>
+				</when>
+				<when test="params.where == 'query_exist_not_self_customer_by_mobile'">
+					<if test="params.cellphone != null">c.cellphone = #{params.cellphone} and c.id != #{params.id}</if>
+				</when>
+				<when test="params.where == 'query_exist_not_self_customer_by_email'">
+					<if test="params.email != null">c.email = #{params.email} and c.id != #{params.id}</if>
+				</when>
+				<when test="params.where == 'query_exist_customer_by_keyword'">
+					<if test="params.keyword != null">
+						c.id = #{params.keyword}
+						or lower(c.email) = lower(#{params.keyword})
+						or c.phone = #{params.keyword}
+						or c.cellphone = #{params.keyword}
+						or lower(c.first_name) = lower(#{params.keyword})
+						or lower(c.last_name) = lower(#{params.keyword})
+					</if>
+				</when>
+				<otherwise>
+					<if test="params.last_name != null">c.last_name LIKE CONCAT('%', '${params.last_name}', '%')</if>
+					<if test="params.first_name != null">c.first_name LIKE CONCAT('%', '${params.first_name}', '%')</if>
+					<if test="params.status != null">c.status LIKE CONCAT('%', '${params.status}', '%')</if>
+					<if test="params.id != null">and c.id LIKE CONCAT('%', '${params.id}', '%')</if>
+					<if test="params.login_name != null">and c.login_name LIKE CONCAT('%', '${params.login_name}', '%')</if>
+					<if test="params.phone != null">and c.phone LIKE CONCAT('%', '${params.phone}', '%')</if>
+					<if test="params.cellphone != null">and c.cellphone LIKE CONCAT('%', '${params.cellphone}', '%')</if>
+					<if test="params.email != null">and c.email LIKE CONCAT('%', '${params.email}', '%')</if>
+					<if test="params.address != null">and c.address LIKE CONCAT('%', '${params.address}', '%')</if>
+					<if test="params.svlan != null">and co.svlan LIKE CONCAT('%', '${params.svlan}', '%')</if>
+					<if test="params.cvlan != null">and co.cvlan LIKE CONCAT('%', '${params.cvlan}', '%')</if>
+					<if test="params.order_status != null">or co.order_status LIKE CONCAT('%', '${params.order_status}', '%')</if>
+					<if test="params.pstn != null">
+						and c.id IN(
+									SELECT customer_id FROM tm_customer_order WHERE id IN(
+										SELECT order_id FROM tm_customer_order_detail
+										WHERE pstn_number LIKE CONCAT('%', '${params.pstn}', '%')
+										AND detail_type='pstn'
+									)
+								)
+					</if>
+					<if test="params.voip != null">
+						and c.id IN(
+									SELECT customer_id FROM tm_customer_order WHERE id IN(
+										SELECT order_id FROM tm_customer_order_detail
+										WHERE pstn_number LIKE CONCAT('%', '${params.voip}', '%')
+										AND detail_type='voip'
+									)
+								)
+					</if>
+					<if test="params.order_id != null">
+						and c.id IN(
+									SELECT customer_id FROM tm_customer_order
+									WHERE id LIKE CONCAT('%', '${params.order_id}', '%')
+								)
+					</if>
+					<if test="params.broadband_asid != null">
+						and c.id IN(
+									SELECT customer_id FROM tm_customer_order
+									WHERE broadband_asid LIKE CONCAT('%', '${params.broadband_asid}', '%')
+								)
+					</if>
+					<if test="params.invoice_id != null">
+						and c.id IN(
+									SELECT customer_id FROM tm_customer_invoice
+									WHERE id LIKE CONCAT('%', '${params.invoice_id}', '%')
+								)
+					</if>
+				</otherwise>
+			</choose>
+		</where>
+	</sql>
+	
+	<!-- // DEFINITION AREA -->
+	<!-- =================================================================================== -->
+	<!-- SELECT AREA -->
+	
+	<select id="selectCustomers" parameterType="Customer" resultType="Customer">
+		select * from tm_customer as c
+		<include refid="customerWhere"/>
+	</select>
+	
+	<select id="selectCustomersByPage" parameterType="Page" resultMap="customerResultMap">
+		select 
+			<include refid="customerColumns"/>
+			from tm_customer as c
+		<include refid="customerWhere"/>
+		<if test="params.orderby != null">${params.orderby}</if>
+		limit #{pageOffset}, #{pageSize}
+	</select>
+
+	<select id="selectCustomersSum" parameterType="Page" resultType="int">
+		select count(*) from tm_customer as c
+		<include refid="customerWhere"/>
+	</select>
+	
+	<select id="selectExistCustomer" resultType="int">
+		select count(*) from tm_customer as c
+		<include refid="customerWhere"/>
+	</select>
+
+	<!-- // END SELECT AREA -->
+	<!-- =================================================================================== -->
+	<!-- INSERT AREA -->
+	
+	<insert id="insertCustomer" parameterType="Customer" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `tm_customer`(
+		`login_name`, `password`, `md5_password`, `user_name`, `first_name`, `last_name`,
+		`address`, `email`, `phone`, `cellphone`, `status`, `invoice_post`, `register_date`, `active_date`, 
+		`balance`, `title`, `birth`, `driver_licence`, `passport`, `country`, `company_name`,
+		`identity_type`, `identity_number`, `result`, `customer_type`)
+		VALUES (
+		#{login_name}, #{password}, #{md5_password}, #{user_name}, #{first_name}, #{last_name}, 
+		#{address}, #{email}, #{phone}, #{cellphone}, #{status}, #{invoice_post}, #{register_date}, #{active_date}, 
+		#{balance}, #{title}, #{birth}, #{driver_licence}, #{passport}, #{country}, #{company_name},
+		#{identity_type}, #{identity_number}, #{result}, #{customer_type})
+	</insert>
+
+	<!-- // END INSERT AREA -->
+	<!-- =================================================================================== -->
+	<!-- UPDATE AREA -->
+	
+	<update id="updateCustomer" parameterType="Customer">
+		update tm_customer
+		<set>
+			<if test="login_name != null">login_name = #{login_name},</if>
+			<if test="password != null">password = #{password},</if>
+			<if test="md5_password != null">md5_password = #{md5_password},</if>
+			<if test="user_name != null">user_name = #{user_name},</if>
+			<if test="first_name != null">first_name = #{first_name},</if>
+			<if test="last_name != null">last_name = #{last_name},</if>
+			<if test="address != null">address = #{address},</if>
+			<if test="email != null">email = #{email},</if>
+			<if test="phone != null">phone = #{phone},</if>
+			<if test="cellphone != null">cellphone = #{cellphone},</if>
+			<if test="status != null">status = #{status},</if>
+			<if test="invoice_post != null">invoice_post = #{invoice_post},</if>
+			<if test="register_date != null">register_date = #{register_date},</if>
+			<if test="active_date != null">active_date = #{active_date},</if>
+			<if test="balance != null">balance = #{balance},</if>
+			<if test="title != null">title = #{title},</if>
+			<if test="birth != null">birth = #{birth},</if>
+			<if test="driver_licence != null">driver_licence = #{driver_licence},</if>
+			<if test="passport != null">passport = #{passport},</if>
+			<if test="country != null">country = #{country},</if>
+			<if test="company_name != null">company_name = #{company_name},</if>
+			<if test="identity_type != null">identity_type = #{identity_type},</if>
+			<if test="identity_number != null">identity_number = #{identity_number},</if>
+			<if test="result != null">result = #{result},</if>
+			<if test="customer_type != null">customer_type = #{customer_type}</if>
+		</set>
+		<where>
+			<if test="params.id != null">id = #{params.id}</if>
+			<if test="params.email != null">or email = #{params.email}</if>
+			<if test="params.cellphone != null">or cellphone = #{params.cellphone}</if>
+		</where>
+	</update>
+	
+	<update id="updateCustomerStatus" parameterType="Customer">
+		update tm_customer set status = #{status}
+		<if test="status == 'active'">
+			, active_date = now()
+		</if>
+		where id = #{id}
+	</update>
+
+	<!-- // END UPDATE AREA -->
+	<!-- =================================================================================== -->
+	<!-- DELETE AREA -->
+	
+	<delete id="deleteCustomerById" parameterType="int">
+		DELETE FROM tm_customer WHERE id = #{0}
+	</delete>
+	
+	<!-- // END DELETE AREA -->
+
+</mapper>

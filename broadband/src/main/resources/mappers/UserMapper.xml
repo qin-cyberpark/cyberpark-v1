@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- DEFINITION AREA --><!-- // DEFINITION AREA -->
+<!-- =================================================================================== -->
+<!-- SELECT AREA --><!-- // END SELECT AREA -->
+<!-- =================================================================================== -->
+<!-- INSERT AREA --><!-- // END INSERT AREA -->
+<!-- =================================================================================== -->
+<!-- UPDATE AREA --><!-- // END UPDATE AREA -->
+<!-- =================================================================================== -->
+<!-- DELETE AREA --><!-- // END DELETE AREA -->
+
+<mapper namespace="com.tm.broadband.mapper.UserMapper">
+	
+	<!-- DEFINITION AREA -->
+	<sql id="userWhere">
+		<where>
+			<choose>
+				<when test="params.user_role2 != null">
+					and (user_role = #{params.user_role} or user_role = #{params.user_role2})
+				</when>
+				<otherwise>
+					<if test="params.id != null">id = #{params.id}</if>
+					<if test="params.login_name != null">and login_name = #{params.login_name}</if>
+					<if test="params.password != null">and password = #{params.password}</if>
+					<if test="params.user_name != null">and user_name = #{params.user_name}</if>
+					<if test="params.user_role != null">and user_role = #{params.user_role}</if>
+					<if test="params.memo != null">and memo = #{params.memo}</if>
+					<if test="params.auth != null">and auth = #{params.auth}</if>
+					<if test="params.cellphone != null">and cellphone = #{params.cellphone}</if>
+					<if test="params.email != null">and email = #{params.email}</if>
+					<if test="params.is_provision != null">and is_provision = #{params.is_provision}</if>
+					<if test="params.agent_commission_rates != null">and agent_commission_rates = #{params.agent_commission_rates}</if>
+					<if test="params.invite_commission != null">and invite_commission = #{params.invite_commission}</if>
+				</otherwise>
+			</choose>
+		</where>
+	</sql>
+	<!-- // DEFINITION AREA -->
+	<!-- =================================================================================== -->
+	<!-- SELECT AREA -->
+	
+	<!-- user login -->
+	<select id="selectUserLogin" parameterType="User" resultType="User">
+		select * from tm_user where login_name = #{login_name} and password = #{password}
+	</select>
+	
+	<!-- select user page -->
+	<select id="selectUsersByPage" parameterType="Page" resultType="User">
+		select * from tm_user 
+		<include refid="userWhere"/>
+		${params.orderby} limit #{pageOffset}, #{pageSize}
+	</select>
+	
+	<!-- select user sum -->
+	<select id="selectUsersSum" parameterType="Page" resultType="int">
+		select count(*) from tm_user 
+	</select>
+	
+	<select id="selectExistUser" resultType="int">
+		select count(*) from tm_user 
+		<include refid="userWhere"/>
+	</select>
+	
+	<!-- when create user, check same name -->
+	<select id="selectExistUserByName" resultType="int">
+		select count(*) from tm_user where login_name = #{0} 
+	</select>
+	
+	<!-- select one user by id -->
+	<select id="selectUserById" resultType="User">
+		SELECT * FROM `tm_user` WHERE id = #{0}
+	</select>
+	
+	<!-- select user -->
+	<select id="selectUser" resultType="User">
+		SELECT * FROM `tm_user`
+		<include refid="userWhere"/>
+	</select>
+	
+	<!-- when update user, check same name -->
+	<select id="selectExistNotSelfUserfByName" resultType="int">
+		select count(*) from tm_user where login_name = #{0} and id != #{1}
+	</select>
+	
+	<!-- select users whose id exist in order's sale_id -->
+	<select id="selectUsersWhoseIdExistInOrderInvoice" resultType="User">
+		select * from tm_user where id in(
+			select distinct sale_id from tm_customer_order
+			where id in(
+				select order_id from tm_customer_invoice
+			)
+			and order_status='using'
+			union
+			select distinct user_id from tm_customer_order
+			where id in(
+				select order_id from tm_customer_invoice
+			)
+			and order_status='using'
+		)
+	</select>
+	
+	<!-- select users whose id exist in order's sale_id -->
+	<select id="selectUsersWhoseIdExistInOrder" resultType="User">
+		select * from tm_user where id in(
+			select distinct sale_id from tm_customer_order
+			where sale_id is not null
+			union
+			select distinct user_id from tm_customer_order
+			where user_id is not null
+		)
+	</select>
+	
+	<!-- // END SELECT AREA -->
+	
+	<!-- =================================================================================== -->
+	
+	<!-- INSERT AREA -->
+	
+	<insert id="insertUser" parameterType="User">
+		insert into tm_user(
+			login_name,password,user_name,user_role,memo,auth,cellphone,email,is_provision,agent_commission_rates,invite_commission
+		) values (
+			#{login_name},#{password},#{user_name},#{user_role},#{memo},#{auth},#{cellphone},#{email},#{is_provision},#{agent_commission_rates},#{invite_commission}
+		)
+	</insert>
+	
+	<!-- // END INSERT AREA -->
+	<!-- =================================================================================== -->
+	
+	<!-- UPDATE AREA -->
+	
+	<update id="updateUser" parameterType="User">
+		UPDATE `tm_user` 
+		<set>
+			<if test="login_name != null">`login_name`=#{login_name},</if>
+			<if test="password != null">`password`=#{password},</if>
+			<if test="user_name != null">`user_name`=#{user_name},</if>
+			<if test="user_role != null">`user_role`=#{user_role},</if>
+			<if test="memo != null">`memo`=#{memo},</if>
+			<if test="auth != null">`auth`=#{auth},</if>
+			<if test="cellphone != null">`cellphone`=#{cellphone},</if>
+			<if test="email != null">`email`=#{email},</if>
+			<if test="is_provision != null">`is_provision`=#{is_provision},</if>
+			<if test="agent_commission_rates != null">`agent_commission_rates`=#{agent_commission_rates},</if>
+			<if test="invite_commission != null">`invite_commission`=#{invite_commission}</if>
+		</set>
+		<where>
+			<if test="params.id != null">`id`=#{params.id}</if>
+		</where>
+	</update>
+	
+	<!-- // END UPDATE AREA -->
+	
+	<!-- =================================================================================== -->
+	
+	<!-- DELETE AREA --><!-- // END DELETE AREA -->
+	
+	
+</mapper>

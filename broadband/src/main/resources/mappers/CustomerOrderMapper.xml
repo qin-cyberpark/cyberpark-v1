@@ -1,0 +1,676 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- DEFINITION AREA --><!-- // DEFINITION AREA -->
+<!-- =================================================================================== -->
+<!-- SELECT AREA --><!-- // END SELECT AREA -->
+<!-- =================================================================================== -->
+<!-- INSERT AREA --><!-- // END INSERT AREA -->
+<!-- =================================================================================== -->
+<!-- UPDATE AREA --><!-- // END UPDATE AREA -->
+<!-- =================================================================================== -->
+<!-- DELETE AREA --><!-- // END DELETE AREA -->
+
+<mapper namespace="com.tm.broadband.mapper.CustomerOrderMapper">
+
+	<!-- DEFINITION AREA -->
+
+	<sql id="customerColumns">
+		c.`id` 					as c_id
+		, c.`login_name` 		as c_login_name
+		, c.`password` 			as c_password
+		, c.`md5_password` 		as c_md5_password
+		, c.`user_name` 		as c_user_name
+		, c.`first_name` 		as c_first_name
+		, c.`last_name` 		as c_last_name
+		, c.`address` 			as c_address
+		, c.`email` 			as c_email
+		, c.`phone` 			as c_phone
+		, c.`cellphone` 		as c_cellphone
+		, c.`status` 			as c_status
+		, c.`invoice_post` 		as c_invoice_post
+		, c.`register_date` 	as c_register_date
+		, c.`active_date` 		as c_active_date
+		, c.`balance` 			as c_balance
+		, c.`title`				as c_title
+		, c.`birth`				as c_birth
+		, c.`driver_licence`	as c_driver_licence
+		, c.`passport`			as c_passport
+		, c.`country`			as c_country
+		, c.`company_name`		as c_company_name
+		, c.`identity_type`		as c_identity_type
+		, c.`identity_number` 	as c_identity_number
+		, c.`result`			as c_result
+	</sql>
+	<resultMap type="Customer" id="customerResultMap">
+		<id property="id" column="c_id" />
+		<result property="login_name" column="c_login_name" />
+		<result property="password" column="c_password" />
+		<result property="md5_password" column="c_md5_password" />
+		<result property="user_name" column="c_user_name" />
+		<result property="first_name" column="c_first_name" />
+		<result property="last_name" column="c_last_name" />
+		<result property="address" column="c_address" />
+		<result property="email" column="c_email" />
+		<result property="phone" column="c_phone" />
+		<result property="cellphone" column="c_cellphone" />
+		<result property="status" column="c_status" />
+		<result property="invoice_post" column="c_invoice_post" />
+		<result property="register_date" column="c_register_date" />
+		<result property="active_date" column="c_active_date" />
+		<result property="balance" column="c_balance" />
+		<result property="title" column="c_title" />
+		<result property="birth" column="c_birth" />
+		<result property="driver_licence" column="c_driver_licence" />
+		<result property="passport" column="c_passport" />
+		<result property="country" column="c_country" />
+		<result property="company_name" column="c_company_name" />
+		<result property="identity_type" column="c_identity_type" />
+		<result property="identity_number" column="c_identity_number" />
+		<result property="result" column="c_result" />
+	</resultMap>
+	
+	<sql id="customerOrderColumns">
+		co.`id` 								as co_id
+		, co.`order_serial` 					as co_order_serial
+		, co.`customer_id` 						as co_customer_id
+		, co.`order_total_price` 				as co_order_total_price
+		, co.`order_create_date` 				as co_order_create_date
+		, co.`order_status` 					as co_order_status
+		, co.`order_using_start` 				as co_order_using_start
+		, co.`next_invoice_create_date` 		as co_next_invoice_create_date
+		, co.`next_invoice_create_date_flag` 	as co_next_invoice_create_date_flag
+		, co.`order_type` 						as co_order_type
+		, co.`order_broadband_type` 			as co_order_broadband_type
+		, co.`svlan`	 						as co_svlan
+		, co.`cvlan` 							as co_cvlan
+		, co.`transition_provider_name` 		as co_transition_provider_name
+		, co.`transition_account_holder_name`  	as co_transition_account_holder_name
+		, co.`transition_account_number`		as co_transition_account_number
+		, co.`transition_porting_number`		as co_transition_porting_number
+		, co.`hardware_post`					as co_hardware_post
+		, co.`order_due`						as co_order_due
+		, co.`pstn_count`						as co_pstn_count
+		, co.`pstn_rental_amount`				as co_pstn_rental_amount
+		, co.`term_period`						as co_term_period
+		, co.`pppoe_loginname`					as co_pppoe_loginname
+		, co.`pppoe_password`					as co_pppoe_password
+		, co.`sale_id`							as co_sale_id
+		, co.`order_pdf_path`					as co_order_pdf_path
+		, co.`credit_pdf_path`					as co_credit_pdf_path
+		, co.`signature`						as co_signature
+		, co.`optional_request`					as co_optional_request
+		, co.`broadband_asid`					as co_broadband_asid
+		, co.`rfs_date`							as co_rfs_date
+		, co.`previous_provider_invoice`		as co_previous_provider_invoice
+		, co.`user_id`							as co_user_id
+		, co.`ddpay_pdf_path`					as co_ddpay_pdf_path
+		, co.`is_ddpay`							as co_is_ddpay
+		, co.`ordering_form_pdf_path`			as co_ordering_form_pdf_path
+		, co.`receipt_pdf_path`					as co_receipt_pdf_path
+		, co.`disconnected_date` 				as co_disconnected_date
+		, co.`connection_date`					as co_connection_date
+		, co.`contract`							as co_contract
+		, co.`inviter_customer_id`				as co_inviter_customer_id
+		, co.`inviter_user_id`					as co_inviter_user_id
+		, co.`inviter_rate`						as co_inviter_rate
+		, co.`invitee_rate`						as co_invitee_rate
+		
+		, co.`title`							as co_title
+		, co.`first_name`						as co_first_name
+		, co.`last_name`						as co_last_name
+		, co.`address`							as co_address
+		, co.`mobile`							as co_mobile
+		, co.`phone`							as co_phone
+		, co.`email`							as co_email
+		, co.`customer_type`					as co_customer_type
+		
+		, co.`org_name`							as co_org_name
+		, co.`org_type`							as co_org_type
+		, co.`org_trading_name`					as co_org_trading_name
+		, co.`org_register_no`					as co_org_register_no
+		, co.`org_incoporate_date`				as co_org_incoporate_date
+		, co.`org_trading_months`				as co_org_trading_months
+		, co.`holder_name`						as co_holder_name
+		, co.`holder_job_title`					as co_holder_job_title
+		, co.`holder_phone`						as co_holder_phone
+		, co.`holder_email`						as co_holder_email
+		
+		, co.`xero_invoice_status` 				as co_xero_invoice_status
+		, co.`is_send_xero_invoice` 			as co_is_send_xero_invoice
+		, co.`checklist_progress` 				as co_checklist_progress
+	</sql>
+	<resultMap type="CustomerOrder" id="customerOrderResultMap">
+		<id property="id" column="co_id" />
+		<result property="order_serial" column="co_order_serial" />
+		<result property="customer_id" column="co_customer_id" /> 
+		<result property="order_total_price" column="co_order_total_price" />
+		<result property="order_create_date" column="co_order_create_date" />
+		<result property="order_status" column="co_order_status" />
+		<result property="order_using_start" column="co_order_using_start" />
+		<result property="next_invoice_create_date" column="co_next_invoice_create_date" />
+		<result property="next_invoice_create_date_flag" column="co_next_invoice_create_date_flag" />
+		<result property="order_type" column="co_order_type" />
+		<result property="order_broadband_type" column="co_order_broadband_type" />
+		<result property="svlan" column="co_svlan" />
+		<result property="cvlan" column="co_cvlan" />
+		<result property="transition_provider_name" column="co_transition_provider_name" />
+		<result property="transition_account_holder_name" column="co_transition_account_holder_name" />
+		<result property="transition_account_number" column="co_transition_account_number" />
+		<result property="transition_porting_number" column="co_transition_porting_number" />
+		<result property="hardware_post" column="co_hardware_post" />
+		<result property="order_due" column="co_order_due" />
+		<result property="pstn_count" column="co_pstn_count" />
+		<result property="pstn_rental_amount" column="co_pstn_rental_amount" />
+		<result property="term_period" column="co_term_period" />
+		<result property="pppoe_loginname" column="co_pppoe_loginname" />
+		<result property="pppoe_password" column="co_pppoe_password" />
+		<result property="sale_id" column="co_sale_id" />
+		<result property="order_pdf_path" column="co_order_pdf_path" />
+		<result property="credit_pdf_path" column="co_credit_pdf_path" />
+		<result property="signature" column="co_signature" />
+		<result property="optional_request" column="co_optional_request" />
+		<result property="broadband_asid" column="co_broadband_asid" />
+		<result property="rfs_date" column="co_rfs_date" />
+		<result property="previous_provider_invoice" column="co_previous_provider_invoice" />
+		<result property="user_id" column="co_user_id" />
+		<result property="ddpay_pdf_path" column="co_ddpay_pdf_path" />
+		<result property="is_ddpay" column="co_is_ddpay" />
+		<result property="ordering_form_pdf_path" column="co_ordering_form_pdf_path" />
+		<result property="receipt_pdf_path" column="co_receipt_pdf_path" />
+		<result property="disconnected_date" column="co_disconnected_date" />
+		<result property="connection_date" column="co_connection_date" />
+		<result property="contract" column="co_contract" />
+		<result property="inviter_customer_id" column="co_inviter_customer_id" />
+		<result property="inviter_user_id" column="co_inviter_user_id" />
+		<result property="inviter_rate" column="co_inviter_rate" />
+		<result property="invitee_rate" column="co_invitee_rate" />
+		
+		<result property="title" column="co_title" />
+		<result property="first_name" column="co_first_name" />
+		<result property="last_name" column="co_last_name" />
+		<result property="address" column="co_address" />
+		<result property="mobile" column="co_mobile" />
+		<result property="phone" column="co_phone" />
+		<result property="email" column="co_email" />
+		<result property="customer_type" column="co_customer_type" />
+		
+		<result property="org_name" column="co_org_name" />
+		<result property="org_type" column="co_org_type" />
+		<result property="org_trading_name" column="co_org_trading_name" />
+		<result property="org_register_no" column="co_org_register_no" />
+		<result property="org_incoporate_date" column="co_org_incoporate_date" />
+		<result property="org_trading_months" column="co_org_trading_months" />
+		<result property="holder_name" column="co_holder_name" />
+		<result property="holder_job_title" column="co_holder_job_title" />
+		<result property="holder_phone" column="co_holder_phone" />
+		<result property="holder_email" column="co_holder_email" />
+		
+		<result property="xero_invoice_status" column="co_xero_invoice_status" />
+		<result property="is_send_xero_invoice" column="co_is_send_xero_invoice" />
+		<result property="checklist_progress" column="co_checklist_progress" />
+		
+		<association property="customer" resultMap="customerResultMap"/>
+	</resultMap>
+	
+	<sql id="customerOrderDetailColumns">
+		cod.`id` 								as cod_id, 
+		cod.`order_id` 							as cod_order_id, 
+		cod.`detail_name` 						as cod_detail_name,
+		cod.`detail_desc` 						as cod_detail_desc, 
+		cod.`detail_price` 						as cod_detail_price,
+		cod.`detail_data_flow` 					as cod_detail_data_flow, 
+		cod.`detail_plan_status` 				as cod_detail_plan_status,
+		cod.`detail_plan_type` 					as cod_detail_plan_type, 
+		cod.`detail_plan_sort` 					as cod_detail_plan_sort,
+		cod.`detail_plan_group` 				as cod_detail_plan_group,
+		cod.`detail_plan_new_connection_fee` 	as cod_detail_plan_new_connection_fee,
+		cod.`detail_term_period` 				as cod_detail_term_period,
+		cod.`detail_topup_data_flow` 			as cod_detail_topup_data_flow,
+		cod.`detail_topup_fee` 					as cod_detail_topup_fee,
+		cod.`detail_plan_memo` 					as cod_detail_plan_memo, 
+		cod.`detail_unit` 						as cod_detail_unit,
+		cod.`detail_calling_minute` 			as cod_detail_calling_minute,
+		cod.`detail_type` 						as cod_detail_type,
+		cod.`detail_is_next_pay`				as cod_detail_is_next_pay,
+		cod.`detail_expired`					as cod_detail_expired,
+		cod.`is_post`							as cod_is_post,
+		cod.`hardware_comment`					as cod_hardware_comment,
+		cod.`track_code`						as cod_track_code,
+		cod.`pstn_number` 						as cod_pstn_number,
+		cod.`user_id` 							as cod_user_id,
+		cod.`voip_password` 					as cod_voip_password,
+		cod.`voip_assign_date` 					as cod_voip_assign_date
+	</sql>
+	<resultMap type="CustomerOrderDetail" id="customerOrderDetailResultMap">
+		<id property="id" column="cod_id" />
+		<id property="order_id" column="cod_order_id" />
+		<result property="detail_name" column="cod_detail_name" />
+		<result property="detail_desc" column="cod_detail_desc" />
+		<result property="detail_price" column="cod_detail_price" />
+		<result property="detail_data_flow" column="cod_detail_data_flow" />
+		<result property="detail_plan_status" column="cod_detail_plan_status" />
+		<result property="detail_plan_type" column="cod_detail_plan_type" />
+		<result property="detail_plan_sort" column="cod_detail_plan_sort" />
+		<result property="detail_plan_group" column="cod_detail_plan_group" />
+		<result property="detail_plan_new_connection_fee" column="cod_detail_plan_new_connection_fee" />
+		<result property="detail_term_period" column="cod_detail_term_period" />
+		<result property="detail_topup_data_flow" column="cod_detail_topup_data_flow" />
+		<result property="detail_topup_fee" column="cod_detail_topup_fee" />
+		<result property="detail_plan_memo" column="cod_detail_plan_memo" />
+		<result property="detail_unit" column="cod_detail_unit" />
+		<result property="detail_calling_minute" column="cod_detail_calling_minute" />
+		<result property="detail_type" column="cod_detail_type" />
+		<result property="detail_is_next_pay" column="cod_detail_is_next_pay" />
+		<result property="detail_expired" column="cod_detail_expired" />
+		<result property="is_post" column="cod_is_post" />
+		<result property="hardware_comment" column="cod_hardware_comment" />
+		<result property="track_code" column="cod_track_code" />
+		<result property="pstn_number" column="cod_pstn_number" />
+		<result property="user_id" column="cod_user_id" />
+		<result property="voip_password" column="cod_voip_password" />
+		<result property="voip_assign_date" column="cod_voip_assign_date" />
+	</resultMap>
+	
+	<sql id="customerOrderWhere">
+		<where>
+			<choose>
+				<when test="params.where == 'query_exist_customer_by_keyword'">
+					co.id  LIKE CONCAT('%', '${params.keyword}', '%')
+					or co.customer_id LIKE CONCAT('%', '${params.keyword}', '%')
+					or co.first_name LIKE CONCAT('%', '${params.keyword}', '%')
+					or co.last_name LIKE CONCAT('%', '${params.keyword}', '%')
+					or co.phone LIKE CONCAT('%', '${params.keyword}', '%')
+					or co.mobile LIKE CONCAT('%', '${params.keyword}', '%')
+					or co.email LIKE CONCAT('%', '${params.keyword}', '%')
+					or co.address LIKE CONCAT('%', '${params.keyword}', '%')
+					or co.broadband_asid LIKE CONCAT('%', '${params.keyword}', '%')
+					or co.id in(
+						select order_id from tm_customer_invoice where id LIKE CONCAT('%', '${params.keyword}', '%')
+					)
+					or co.id in(
+						select order_id  from tm_customer_order_detail where detail_type='pstn'
+						and pstn_number LIKE CONCAT('%', '${params.keyword}', '%')
+					)
+					or co.id in(
+						select order_id  from tm_customer_order_detail where detail_type='voip'
+						and pstn_number LIKE CONCAT('%', '${params.keyword}', '%')
+					)
+				</when>
+				<when test="params.where == 'query_customer_by_field'">
+					<if test="params.order_id != null">co.id  LIKE CONCAT('%', '${params.order_id}', '%')</if>
+					<if test="params.customer_id != null">and co.customer_id LIKE CONCAT('%', '${params.customer_id}', '%')</if>
+					<if test="params.first_name != null">and co.first_name LIKE CONCAT('%', '${params.first_name}', '%')</if>
+					<if test="params.last_name != null">and co.last_name LIKE CONCAT('%', '${params.last_name}', '%')</if>
+					<if test="params.org_name != null">and co.org_name LIKE CONCAT('%', '${params.org_name}', '%')</if>
+					<if test="params.holder_name != null">and co.holder_name LIKE CONCAT('%', '${params.holder_name}', '%')</if>
+					<if test="params.phone != null">and co.phone LIKE CONCAT('%', '${params.phone}', '%')</if>
+					<if test="params.mobile != null">and co.mobile LIKE CONCAT('%', '${params.mobile}', '%')</if>
+					<if test="params.email != null">and co.email LIKE CONCAT('%', '${params.email}', '%')</if>
+					<if test="params.address != null">and co.address LIKE CONCAT('%', '${params.address}', '%')</if>
+					<if test="params.broadband_asid != null">
+						and co.id in(
+							select order_id from tm_customer_order_broadband_asid
+							where broadband_asid LIKE CONCAT('%', '${params.broadband_asid}', '%')
+						)
+					</if>
+					<if test="params.customer_type != null">and co.customer_type LIKE CONCAT('%', '${params.customer_type}', '%')</if>
+					<if test="params.user_id != null">
+						and (
+							co.user_id LIKE CONCAT('%', '${params.user_id}', '%')
+							or
+							co.sale_id LIKE CONCAT('%', '${params.user_id}', '%')
+						)
+					</if>
+					<if test="params.invoice_id != null">
+						and co.id in(
+							select order_id from tm_customer_invoice where id LIKE CONCAT('%', '${params.invoice_id}', '%')
+						)
+					</if>
+					<if test="params.pstn != null">
+						and co.id in(
+							select order_id  from tm_customer_order_detail where detail_type='pstn'
+							and pstn_number LIKE CONCAT('%', '${params.pstn}', '%')
+						)
+					</if>
+					<if test="params.voip != null">
+						and co.id in(
+							select order_id  from tm_customer_order_detail where detail_type='voip'
+							and pstn_number LIKE CONCAT('%', '${params.voip}', '%')
+						)
+					</if>
+				</when>
+				<when test="params.where == 'query_order_status'">
+					<if test="params.order_status != null">co.order_status = #{params.order_status}</if>
+					<if test="params.order_status_1 != null">or co.order_status = #{params.order_status_1}</if>
+					<if test="params.status != null">and c.status = #{params.status}</if>
+				</when>
+				<when test="params.where == 'query_no_invoice'">
+					co.id NOT IN(SELECT DISTINCT order_id FROM tm_customer_invoice)
+					<if test="params.sale_id != null">and co.sale_id = #{params.sale_id}</if>
+				</when>
+				<when test="params.where == 'query_sale_id_not_null'">
+					(co.sale_id is not null OR co.user_id is not null)
+					<if test="params.sale_id != null">and (co.sale_id = #{params.sale_id} || co.user_id = #{params.sale_id})</if>
+					<if test="params.signature != null">and co.signature = #{params.signature}</if>
+				</when>
+				<when test="params.where == 'query_status_no_discard_cancel'">
+					<if test="params.customer_id != null">co.customer_id = #{params.customer_id}</if>
+					<if test="params.order_status != null and params.order_status_1 != null">and (co.order_status != #{params.order_status} or co.order_status != #{params.order_status_1})</if>
+				</when>
+				<when test="params.where == 'query_pending_notice'">
+					<if test="params.order_status != null">co.order_status=#{params.order_status}</if>
+					<if test="params.order_create_date != null">and date(co.order_create_date) &lt;= date(#{params.order_create_date})</if>
+					<if test="params.customer_type != null">
+					and co.customer_type = #{params.customer_type}
+					</if>
+				</when>
+				<when test="params.where == 'query_no_term'">
+					<if test="params.order_status != null">co.order_status = #{params.order_status}</if>
+					<if test="params.next_invoice_create_date != null">and date(co.next_invoice_create_date) = date(#{params.next_invoice_create_date})</if>
+					<if test="params.order_type != null">and co.order_type = #{params.order_type}</if>
+					<if test="params.is_ddpay != null and params.order_term_type == 'order-term'">
+						or (
+							(co.is_ddpay IS NULL or co.is_ddpay = #{params.is_ddpay})
+							and co.order_type = #{params.order_term_type}
+							and co.order_status = #{params.order_status}
+							and date(co.next_invoice_create_date) = date(#{params.next_invoice_create_date})
+						)
+					</if>
+				</when>
+				<when test="params.where == 'query_term'">
+					<!-- co.order_using_start IS NOT NULL and date(co.order_using_start)!=date(now()) -->
+					<if test="params.status != null">co.order_status = #{params.status}</if>
+					<if test="params.order_type != null">and co.order_type = #{params.order_type}</if>
+					<if test="params.is_ddpay != null">and co.is_ddpay = #{params.is_ddpay}</if>
+				</when>
+				<when test="params.where == 'query_topup'">
+					<if test="params.order_status != null">co.order_status = #{params.order_status}</if>
+					<if test="params.order_due_backward_one != null and params.order_due_backward_two != null">and (date(co.order_due) = date(#{params.order_due_backward_one}) or date(co.order_due) = date(#{params.order_due_backward_two}))</if>
+					<if test="params.order_type_topup != null">and co.order_type = #{params.order_type_topup}</if>
+				</when>
+				<when test="params.where == 'query_callings'">
+					co.order_status = #{params.status}
+					and co.order_type in('order-term', 'order-no-term')
+					and DATE_FORMAT(co.next_invoice_create_date, '%Y-%m') &gt; DATE_FORMAT(now(), '%Y-%m')
+					and co.id in(
+						select order_id from tm_customer_order_detail
+						where pstn_number IS NOT NULL and pstn_number != ''
+					)
+					and co.id in(
+						select order_id from tm_customer_invoice
+						where DATE_FORMAT(create_date, '%Y-%m') &lt; DATE_FORMAT(now(), '%Y-%m')
+						and id in(
+							select MAX(id) from tm_customer_invoice
+							group by order_id
+						)
+					)
+				</when>
+				<when test="params.where == 'query_pstn_number_orders'">
+					co.id in (
+						select order_id from tm_customer_order_detail
+						where detail_type='pstn'
+						and pstn_number IS NOT NULL
+						and pstn_number!=''
+					)
+					and
+					(
+						(
+							co.customer_type='personal'
+							and
+							co.order_status in (
+								'using', 'rfs', 'paid', 'ordering-paid'
+							)
+						)
+						or
+						(
+							co.customer_type='business'
+							and
+							co.order_status in (
+								'using', 'rfs', 'paid', 'ordering-paid', 'pending', 'ordering-pending'
+							)
+						)
+					)
+				</when>
+				<when test="params.where == 'query_not_pstn_number_orders'">
+					co.id not in (
+						select order_id from tm_customer_order_detail
+						where detail_type='pstn'
+						and pstn_number IS NOT NULL
+						and pstn_number!=''
+					)
+					and
+					(
+						(
+							co.customer_type='personal'
+							and
+							co.order_status in (
+								'using', 'rfs', 'paid', 'ordering-paid'
+							)
+						)
+						or
+						(
+							co.customer_type='business'
+							and
+							co.order_status in (
+								'using', 'rfs', 'paid', 'ordering-paid', 'pending', 'ordering-pending'
+							)
+						)
+					)
+				</when>
+				<when test="params.where == 'query_non_online_orders'">
+					co.order_status='using'
+					and (
+						(co.user_id is not null and co.user_id!='')
+						or
+						(co.sale_id is not null and co.sale_id!='')
+					)
+					and co.id in (
+						select order_id from tm_customer_invoice
+					)
+					<if test="params.customer_type != null">
+						and co.customer_type=#{params.customer_type}
+					</if>
+					<if test="params.sale_id != null">
+						and (
+							co.sale_id=#{params.sale_id}
+							or
+							co.user_id=#{params.sale_id}
+						)
+					</if>
+					<if test="params.order_using_start != null">
+						and DATE_FORMAT(co.order_using_start,'%Y-%m')=#{params.order_using_start}
+					</if>
+				</when>
+				<when test="params.where == 'by_invoice_delayed'">
+					next_invoice_create_date &lt; curdate() and order_status='using'
+				</when>
+				<otherwise>
+					<if test="params.id != null">co.id = #{params.id}</if>
+					<if test="params.customer_id != null">and co.customer_id = #{params.customer_id}</if>
+					<if test="params.order_status != null">and co.order_status = #{params.order_status}</if>
+					<if test="params.next_invoice_create_date != null">and date(co.next_invoice_create_date) = date(#{params.next_invoice_create_date})</if>
+					<if test="params.order_type != null">and co.order_type = #{params.order_type}</if>
+					<if test="params.sale_id != null">and co.sale_id = #{params.sale_id}</if>
+					<if test="params.signature != null">and co.signature = #{params.signature}</if>
+					<if test="params.customer_type != null">and co.customer_type = #{params.customer_type}</if>
+					<if test="params.checklist_progress != null">and co.checklist_progress = #{params.checklist_progress}</if>
+				</otherwise>
+			</choose>
+		</where>
+	</sql>
+
+	<!-- // DEFINITION AREA -->
+	<!-- =================================================================================== -->
+	<!-- SELECT AREA -->
+	
+	<select id="selectCustomerOrders" parameterType="CustomerOrder" resultType="CustomerOrder">
+		select * from tm_customer_order as co
+		<include refid="customerOrderWhere"/>
+		<if test="params.orderby != null">${params.orderby}</if>
+	</select>
+	
+	<select id="selectCustomerOrdersByPage" parameterType="Page" resultMap="customerOrderResultMap"  >
+		select 
+			<include refid="customerOrderColumns"/>
+			, <include refid="customerColumns"/>
+		from tm_customer_order as co
+		left join tm_customer as c on c.id = co.customer_id
+		<include refid="customerOrderWhere"/>
+		<if test="params.orderby != null">${params.orderby}</if>
+		limit #{pageOffset}, #{pageSize}
+	</select>
+	
+	<select id="selectCustomerOrdersSum" parameterType="Page" resultType="int">
+		select count(*) from tm_customer_order as co
+		left join tm_customer as c on c.id = co.customer_id
+		<include refid="customerOrderWhere"/>
+	</select>
+		
+	<!-- // END SELECT AREA -->
+	<!-- =================================================================================== -->
+	<!-- INSERT AREA -->
+	
+	<insert id="insertCustomerOrder" parameterType="CustomerOrder" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `tm_customer_order`(
+			`order_serial`, `customer_id`, `order_total_price`, `order_create_date`, `order_status`,
+			`order_type`, `order_broadband_type`, `transition_provider_name`, `transition_account_holder_name`, 
+			`transition_account_number`, `transition_porting_number`, `hardware_post`, `order_due`, 
+			`pstn_count`, `pstn_rental_amount`, `term_period`, `pppoe_loginname`, `pppoe_password`,
+			`sale_id`, `order_pdf_path`, `credit_pdf_path`, `signature`, `optional_request`, `broadband_asid`,
+			`rfs_date`, `previous_provider_invoice`, `user_id`, `ddpay_pdf_path`, `is_ddpay`, `ordering_form_pdf_path`,
+			`receipt_pdf_path`, `disconnected_date`, `connection_date`, `contract`, `inviter_customer_id`, `inviter_user_id`,
+			`inviter_rate`, `invitee_rate`, `title`, `first_name`, `last_name`, `address`, `mobile`, `phone`, `email`, `customer_type`, `org_name`, `org_type`,
+			`org_trading_name`, `org_register_no`, `org_incoporate_date`, `org_trading_months`, `holder_name`, `holder_job_title`,
+			`holder_phone`, `holder_email`, `xero_invoice_status`, `is_send_xero_invoice`, `checklist_progress`)
+		VALUES (
+			#{order_serial}, #{customer_id}, #{order_total_price}, now(), #{order_status},
+			#{order_type}, #{order_broadband_type}, #{transition_provider_name}, #{transition_account_holder_name},
+			#{transition_account_number}, #{transition_porting_number}, #{hardware_post}, #{order_due}, 
+			#{pstn_count}, #{pstn_rental_amount}, #{term_period}, #{pppoe_loginname}, #{pppoe_password},
+			#{sale_id}, #{order_pdf_path}, #{credit_pdf_path}, #{signature}, #{optional_request}, #{broadband_asid},
+			#{rfs_date}, #{previous_provider_invoice}, #{user_id}, #{ddpay_pdf_path}, #{is_ddpay}, #{ordering_form_pdf_path},
+			#{receipt_pdf_path}, #{disconnected_date}, #{connection_date}, #{contract}, #{inviter_customer_id}, #{inviter_user_id},
+			#{inviter_rate}, #{invitee_rate}, #{title}, #{first_name}, #{last_name}, #{address}, #{mobile}, #{phone}, #{email}, #{customer_type}, #{org_name}, #{org_type},
+			#{org_trading_name}, #{org_register_no}, #{org_incoporate_date}, #{org_trading_months}, #{holder_name}, #{holder_job_title},
+			#{holder_phone}, #{holder_email}, #{xero_invoice_status}, #{is_send_xero_invoice}, #{checklist_progress})
+	</insert>
+	
+	<!-- // END INSERT AREA -->
+	<!-- =================================================================================== -->
+	<!-- UPDATE AREA -->
+	
+	<update id="updateCustomerOrder" parameterType="CustomerOrder">
+		update tm_customer_order 
+		<set>
+			<!-- SET NULL -->
+			<if test="params.user_id_null == true">user_id = NULL,</if>
+			<if test="params.sale_id_null == true">sale_id = NULL,</if>
+			
+			<!-- SET NOT NULL -->
+			<if test="order_serial != null">order_serial = #{order_serial},</if>
+			<if test="customer_id != null">customer_id = #{customer_id},</if>
+			<if test="order_total_price != null">order_total_price = #{order_total_price},</if>
+			<if test="order_create_date != null">order_create_date = #{order_create_date},</if>
+			<if test="order_status != null">order_status = #{order_status},</if>
+			<if test="order_using_start != null">order_using_start = #{order_using_start},</if>
+			<if test="next_invoice_create_date != null">next_invoice_create_date = #{next_invoice_create_date},</if>
+			<if test="next_invoice_create_date_flag != null">next_invoice_create_date_flag = #{next_invoice_create_date_flag},</if>
+			<if test="order_type != null">order_type = #{order_type},</if>
+			<if test="order_broadband_type != null">order_broadband_type= #{order_broadband_type},</if>
+			<if test="svlan != null">svlan = #{svlan},</if>
+			<if test="cvlan != null">cvlan = #{cvlan},</if>
+			<if test="transition_provider_name != null">transition_provider_name = #{transition_provider_name},</if>
+			<if test="transition_account_holder_name != null">transition_account_holder_name = #{transition_account_holder_name},</if>
+			<if test="transition_account_number != null">transition_account_number = #{transition_account_number},</if>
+			<if test="transition_porting_number != null">transition_porting_number = #{transition_porting_number},</if>
+			<if test="hardware_post != null">hardware_post = #{hardware_post},</if>
+			<if test="order_due != null">order_due = #{order_due},</if>
+			<if test="pstn_count != null">pstn_count = #{pstn_count},</if>
+			<if test="pstn_rental_amount != null">pstn_rental_amount = #{pstn_rental_amount},</if>
+			<if test="term_period != null">term_period = #{term_period},</if>
+			<if test="pppoe_loginname != null">pppoe_loginname = #{pppoe_loginname},</if>
+			<if test="pppoe_password != null">pppoe_password = #{pppoe_password},</if>
+			<if test="sale_id != null">sale_id = #{sale_id},</if>
+			<if test="order_pdf_path != null">order_pdf_path = #{order_pdf_path},</if>
+			<if test="credit_pdf_path != null">credit_pdf_path = #{credit_pdf_path},</if>
+			<if test="signature != null">signature = #{signature},</if>
+			<if test="optional_request != null">optional_request = #{optional_request},</if>
+			<if test="broadband_asid != null">broadband_asid = #{broadband_asid},</if>
+			<if test="rfs_date != null">rfs_date = #{rfs_date},</if>
+			<if test="previous_provider_invoice != null">previous_provider_invoice = #{previous_provider_invoice},</if>
+			<if test="rfs_date != null">user_id = #{user_id},</if>
+			<if test="ddpay_pdf_path != null">ddpay_pdf_path = #{ddpay_pdf_path},</if>
+			<if test="is_ddpay != null">is_ddpay = #{is_ddpay},</if>
+			<if test="ordering_form_pdf_path != null">ordering_form_pdf_path = #{ordering_form_pdf_path},</if>
+			<if test="receipt_pdf_path != null">receipt_pdf_path = #{receipt_pdf_path},</if>
+			<if test="disconnected_date != null">disconnected_date = #{disconnected_date},</if>
+			<if test="connection_date != null">connection_date = #{connection_date},</if>
+			<if test="contract != null">contract = #{contract},</if>
+			<if test="inviter_customer_id != null">inviter_customer_id = #{inviter_customer_id},</if>
+			<if test="inviter_user_id != null">inviter_user_id = #{inviter_user_id},</if>
+			<if test="inviter_rate != null">inviter_rate = #{inviter_rate},</if>
+			<if test="invitee_rate != null">invitee_rate = #{invitee_rate},</if>
+			
+			<if test="title != null">title = #{title},</if>
+			<if test="first_name != null">first_name = #{first_name},</if>
+			<if test="last_name != null">last_name = #{last_name},</if>
+			<if test="address != null">address = #{address},</if>
+			<if test="mobile != null">mobile = #{mobile},</if>
+			<if test="phone != null">phone = #{phone},</if>
+			<if test="email != null">email = #{email},</if>
+			<if test="customer_type != null">customer_type = #{customer_type},</if>
+			
+			<if test="org_name != null">org_name = #{org_name},</if>
+			<if test="org_type != null">org_type = #{org_type},</if>
+			<if test="org_trading_name != null">org_trading_name = #{org_trading_name},</if>
+			<if test="org_register_no != null">org_register_no = #{org_register_no},</if>
+			<if test="org_incoporate_date != null">org_incoporate_date = #{org_incoporate_date},</if>
+			<if test="org_trading_months != null">org_trading_months = #{org_trading_months},</if>
+			<if test="holder_name != null">holder_name = #{holder_name},</if>
+			<if test="holder_job_title != null">holder_job_title = #{holder_job_title},</if>
+			<if test="holder_phone != null">holder_phone = #{holder_phone},</if>
+			<if test="holder_email != null">holder_email = #{holder_email},</if>
+			
+			<if test="xero_invoice_status != null">xero_invoice_status = #{xero_invoice_status},</if>
+			<if test="is_send_xero_invoice != null">is_send_xero_invoice = #{is_send_xero_invoice},</if>
+			<if test="checklist_progress != null">checklist_progress = #{checklist_progress}</if>
+		</set>
+		<where>
+			<if test="params.id != null">id = #{params.id}</if>
+			<if test="params.customer_id != null">and customer_id = #{params.customer_id}</if>
+		</where>
+	</update>
+	
+	<!-- empty customer order service given, next invoice create date -->
+	<update id="updateCustomerOrderServiceGivingNextInvoiceEmpty" parameterType="CustomerOrder">
+		update tm_customer_order 
+		<set>
+			<if test="order_using_start != null">order_using_start = null,</if>
+			<if test="next_invoice_create_date != null">next_invoice_create_date = null</if>
+		</set>
+		where id = #{params.id}
+	</update>
+	
+	<!-- empty customer order svcvlan, rfs date -->
+	<update id="updateCustomerOrderSVCVLanRFSDateEmpty" parameterType="CustomerOrder">
+		update tm_customer_order set svlan = null, cvlan = null, rfs_date = null where id = #{params.id}
+	</update>
+	
+	<!-- empty customer order broadband asid -->
+	<update id="updateCustomerOrderBroadbandASIDEmpty" parameterType="CustomerOrder">
+		update tm_customer_order set broadband_asid = null where id = #{params.id}
+	</update>
+	
+	<!-- // END UPDATE AREA -->
+	<!-- =================================================================================== -->
+	<!-- DELETE AREA -->
+	
+	<delete id="deleteCustomerOrderByCustomerId" parameterType="int">
+		DELETE FROM tm_customer_order WHERE customer_id = #{0}
+	</delete>
+	
+	<!-- // END DELETE AREA -->
+	
+</mapper>

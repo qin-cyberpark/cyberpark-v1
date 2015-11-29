@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- DEFINITION AREA --><!-- // DEFINITION AREA -->
+<!-- =================================================================================== -->
+<!-- SELECT AREA --><!-- // END SELECT AREA -->
+<!-- =================================================================================== -->
+<!-- INSERT AREA --><!-- // END INSERT AREA -->
+<!-- =================================================================================== -->
+<!-- UPDATE AREA --><!-- // END UPDATE AREA -->
+<!-- =================================================================================== -->
+<!-- DELETE AREA --><!-- // END DELETE AREA -->
+
+<mapper namespace="com.tm.broadband.mapper.CustomerInvoiceDetailMapper">
+	
+	<!-- DEFINITION AREA -->
+
+	<!-- // DEFINITION AREA -->
+	
+	<!-- =================================================================================== -->
+	
+	<!-- SELECT AREA -->
+	
+
+	<select id="selectCustomerInvoiceDetailsByCustomerInvoiceId" parameterType="int" resultType="CustomerInvoiceDetail">
+		SELECT * FROM `tm_customer_invoice_detail` WHERE invoice_id = #{0}
+	</select>
+
+	
+	<!-- // END SELECT AREA -->
+	<!-- =================================================================================== -->
+	<!-- INSERT AREA -->
+	
+
+	<!-- insert customer invoice detail -->
+	<insert id="insertCustomerInvoiceDetail" parameterType="CustomerInvoiceDetail" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `tm_customer_invoice_detail`(
+			`invoice_id`, `invoice_detail_name`, `invoice_detail_desc`, `invoice_detail_price`, 
+			`invoice_detail_unit`, `invoice_detail_date`, `invoice_detail_discount`, `invoice_detail_type`) 
+		VALUES (
+			#{invoice_id}, #{invoice_detail_name}, #{invoice_detail_desc}, #{invoice_detail_price},
+			#{invoice_detail_unit}, #{invoice_detail_date}, #{invoice_detail_discount}, #{invoice_detail_type})
+
+	</insert>
+	
+	<!-- // END INSERT AREA -->
+	<!-- =================================================================================== -->
+	<!-- UPDATE AREA -->
+	
+	<!-- // END UPDATE AREA -->
+	<!-- =================================================================================== -->
+	<!-- DELETE AREA -->
+	<delete id="deleteCustomerInvoiceDetailByInvoiceId" parameterType="int">
+		DELETE FROM tm_customer_invoice_detail WHERE invoice_id = #{0}
+	</delete>
+	<!-- // END DELETE AREA -->
+
+	
+</mapper>

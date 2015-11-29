@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- DEFINITION AREA --><!-- // DEFINITION AREA -->
+<!-- =================================================================================== -->
+<!-- SELECT AREA --><!-- // END SELECT AREA -->
+<!-- =================================================================================== -->
+<!-- INSERT AREA --><!-- // END INSERT AREA -->
+<!-- =================================================================================== -->
+<!-- UPDATE AREA --><!-- // END UPDATE AREA -->
+<!-- =================================================================================== -->
+<!-- DELETE AREA --><!-- // END DELETE AREA -->
+
+
+<mapper namespace="com.tm.broadband.mapper.CustomerCallRecordMapper">
+
+	<!-- DEFINITION AREA -->
+	
+	
+	
+	<sql id="customerCallRecordColumns">
+		ccr.`id` 					as ccr_id,
+		ccr.`statement_date` 		as ccr_statement_date,
+		ccr.`record_type` 			as ccr_record_type,
+		ccr.`clear_service_id` 		as ccr_clear_service_id,
+		ccr.`line_description` 		as ccr_line_description,
+		ccr.`date_from` 			as ccr_date_from,
+		ccr.`date_to` 				as ccr_date_to,
+		ccr.`charge_date_time` 		as ccr_charge_date_time,
+		ccr.`duration` 				as ccr_duration,
+		ccr.`oot_id` 				as ccr_oot_id,
+		ccr.`billing_description` 	as ccr_billing_description,
+		ccr.`amount_excl` 			as ccr_amount_excl,
+		ccr.`amount_incl` 			as ccr_amount_incl,
+		ccr.`phone_called` 			as ccr_phone_called,
+		ccr.`juristiction` 			as ccr_juristiction,
+		ccr.`upload_date` 			as ccr_upload_date,
+		ccr.`invoice_id` 			as ccr_invoice_id
+	</sql>
+	
+	<resultMap type="CustomerCallRecord" id="customerCallRecordResultMap">
+		<id property="id" column="ccr_id" />
+		<result property="statement_date" column="ccr_statement_date" />
+		<result property="record_type" column="ccr_record_type" />
+		<result property="clear_service_id" column="ccr_clear_service_id" />
+		<result property="line_description" column="ccr_line_description" />
+		<result property="date_from" column="ccr_date_from" />
+		<result property="date_to" column="ccr_date_to" />
+		<result property="charge_date_time" column="ccr_charge_date_time" />
+		<result property="duration" column="ccr_duration" />
+		<result property="oot_id" column="ccr_oot_id" />
+		<result property="billing_description" column="ccr_billing_description" />
+		<result property="amount_excl" column="ccr_amount_excl" />
+		<result property="amount_incl" column="ccr_amount_incl" />
+		<result property="phone_called" column="ccr_phone_called" />
+		<result property="juristiction" column="ccr_juristiction" />
+		<result property="upload_date" column="ccr_upload_date" />
+		<result property="invoice_id" column="ccr_invoice_id" />
+	</resultMap>
+	
+	<sql id="customerCallRecordWhere">
+		<where>
+			<choose>
+				<when test="params.where == 'query_disconnected_records'">
+					'0'+ccr.clear_service_id IN(
+						SELECT REPLACE(REPLACE(REPLACE(pstn_number,'-',''),'(',''),')','') FROM tm_customer_order_detail
+						WHERE pstn_number IS NOT NULL
+						AND detail_type='pstn'
+						AND order_id IN(
+							SELECT id FROM tm_customer_order
+							WHERE order_status='disconnected'
+						)
+					)
+					AND ccr.invoice_id IS NULL
+					AND DATE_FORMAT(ccr.statement_date,'%Y-%m')=DATE_FORMAT(#{params.last_month_date},'%Y-%m')
+					AND ccr.amount_incl&gt;0
+					AND ccr.record_type='AC'
+				</when>
+				<when test="params.where == 'query_unmatched_records'">
+					'0'+ccr.clear_service_id NOT IN(
+						SELECT REPLACE(REPLACE(REPLACE(pstn_number,'-',''),'(',''),')','') FROM tm_customer_order_detail
+						WHERE pstn_number IS NOT NULL
+						AND detail_type='pstn'
+					)
+					AND ccr.invoice_id IS NULL
+					AND DATE_FORMAT(ccr.statement_date,'%Y-%m')=DATE_FORMAT(#{params.last_month_date},'%Y-%m')
+					AND ccr.amount_incl&gt;0
+					AND ccr.record_type='AC'
+				</when>
+				<when test="params.where == 'query_last_call_records'">
+					<if test="params.last_month != null">ccr.statement_date >= #{params.last_month}</if>
+					<if test="params.clear_service_id != null">and ccr.clear_service_id = #{params.clear_service_id}</if>
+					and (ccr.record_type='T1' or ccr.record_type='T3')
+					and ccr.billing_description NOT IN(
+						'Calling Numbers Presented - Minimum Charge',
+						'Call restrict with no Directory Access nat Res',
+						'Call restrict with directory access nat Res',
+						'Caller Display Monthly Charge per line Res',
+						'Call waiting nat Res',
+					  	'Faxability Monthly Rental Res',
+						'Smart Bundle package',
+						'3 Way Calls Service Res',
+						'Call Minder with Call Forward Res',
+						'Call Minder-Charges-Standard SME 2 (with TPS)',
+						'Calling Numbers Presented - Minimum Charge',
+						'directory assistance',
+						'FaxAbility-Charges SME1',
+						'FaxAbility-Charges SME2',
+						'Smartphone Services-Call waiting SME2',
+						'S-Phone Call divert (call fwd No ans) SME2',
+						'S-Phone Call divert (call fwd Immed) SME2',
+						'S-Phone Call Restrict with Directory Access SM',
+						'Wire Maintenance',
+						'wire maintenance contract',
+						'Voice chat'
+					)
+					and (
+						ccr.line_description IS NULL
+						OR ccr.line_description NOT IN( 'PAYPHONE' )
+					)
+					and (
+						ccr.phone_called not like '900%'
+						OR ccr.phone_called IS NULL
+					)
+					<if test="params.invoice_id != null">
+						AND ccr.invoice_id = #{params.invoice_id}
+					</if>
+					<if test="params.invoice_id == null">
+						AND ccr.invoice_id IS NULL
+					</if>
+				</when>
+				<when test="params.where == 'query_unused_rental_records'">
+					AND (ccr.billing_description IN(
+						'Calling Numbers Presented - Minimum Charge',
+						'Call restrict with no Directory Access nat Res',
+						'Call restrict with directory access nat Res',
+						'Caller Display Monthly Charge per line Res',
+						'Call waiting nat Res',
+					  	'Faxability Monthly Rental Res',
+						'Smart Bundle package',
+						'3 Way Calls Service Res',
+						'Call Minder with Call Forward Res',
+						'Call Minder-Charges-Standard SME 2 (with TPS)',
+						'Calling Numbers Presented - Minimum Charge',
+						'directory assistance',
+						'FaxAbility-Charges SME1',
+						'FaxAbility-Charges SME2',
+						'Smartphone Services-Call waiting SME2',
+						'S-Phone Call divert (call fwd No ans) SME2',
+						'S-Phone Call divert (call fwd Immed) SME2',
+						'S-Phone Call Restrict with Directory Access SM',
+						'Wire Maintenance',
+						'wire maintenance contract',
+						'Voice chat'
+					) OR ccr.line_description IN(
+						'PAYPHONE'
+					))
+					AND (
+						ccr.clear_service_id = #{params.clear_service_id}
+						OR ccr.phone_called LIKE '900%'
+					)
+					<if test="params.invoice_id != null">
+						AND ccr.invoice_id = #{params.invoice_id}
+					</if>
+					<if test="params.invoice_id == null">
+						AND ccr.invoice_id IS NULL
+					</if>
+				</when>
+				<when test="params.where == 'query_last_month_rental_records'">
+					<if test="params.last_month != null">ccr.statement_date >= #{params.last_month}</if>
+					AND (ccr.billing_description IN(
+						'Calling Numbers Presented - Minimum Charge',
+						'Call restrict with no Directory Access nat Res',
+						'Call restrict with directory access nat Res',
+						'Caller Display Monthly Charge per line Res',
+						'Call waiting nat Res',
+					  	'Faxability Monthly Rental Res',
+						'Smart Bundle package',
+						'3 Way Calls Service Res',
+						'Call Minder with Call Forward Res',
+						'Call Minder-Charges-Standard SME 2 (with TPS)',
+						'Calling Numbers Presented - Minimum Charge',
+						'directory assistance',
+						'FaxAbility-Charges SME1',
+						'FaxAbility-Charges SME2',
+						'Smartphone Services-Call waiting SME2',
+						'S-Phone Call divert (call fwd No ans) SME2',
+						'S-Phone Call divert (call fwd Immed) SME2',
+						'S-Phone Call Restrict with Directory Access SM',
+						'Wire Maintenance',
+						'wire maintenance contract',
+						'Voice chat'
+					) OR ccr.line_description IN(
+						'PAYPHONE'
+					))
+					AND (
+						ccr.clear_service_id = #{params.clear_service_id}
+						OR (
+							ccr.phone_called LIKE '900%'
+							AND
+							ccr.clear_service_id = #{params.clear_service_id}
+						)
+					)
+					<if test="params.invoice_id != null">
+						AND ccr.invoice_id = #{params.invoice_id}
+					</if>
+					<if test="params.invoice_id == null">
+						AND ccr.invoice_id IS NULL
+					</if>
+				</when>
+				<otherwise>
+					<if test="params.id != null">ccr.id = #{params.id}</if>
+					<if test="params.statement_date != null">and ccr.statement_date = #{params.statement_date}</if>
+					<if test="params.record_type != null">and ccr.record_type = #{params.record_type}</if>
+					<if test="params.clear_service_id != null">and ccr.clear_service_id = #{params.clear_service_id}</if>
+					<if test="params.date_from != null">and ccr.date_from = #{params.date_from}</if>
+					<if test="params.date_to != null">and ccr.date_to = #{params.date_to}</if>
+					<if test="params.charge_date_time != null">and ccr.charge_date_time = #{params.charge_date_time}</if>
+					<if test="params.duration != null">and ccr.duration = #{params.duration}</if>
+					<if test="params.oot_id != null">and ccr.oot_id = #{params.oot_id}</if>
+					<if test="params.billing_description != null">and ccr.billing_description = #{params.billing_description}</if>
+					<if test="params.amount_excl != null">and ccr.amount_excl = #{params.amount_excl}</if>
+					<if test="params.amount_incl != null">and ccr.amount_incl = #{params.amount_incl}</if>
+					<if test="params.phone_called != null">and ccr.phone_called = #{params.phone_called}</if>
+					<if test="params.juristiction != null">and ccr.juristiction = #{params.juristiction}</if>
+					<if test="params.upload_date != null">and ccr.upload_date = #{params.upload_date}</if>
+					<if test="params.invoice_id != null">and ccr.invoice_id = #{params.invoice_id}</if>
+				</otherwise>
+			</choose>
+		</where>
+	</sql>
+	
+	<!-- // DEFINITION AREA -->
+	
+	<!-- =================================================================================== -->
+
+	<!-- SELECT AREA -->
+	
+	<select id="selectCustomerCallRecordsByStatementDate" parameterType="CustomerCallRecord" resultType="CustomerCallRecord">
+		select * from tm_customer_call_record
+		<where>
+			<if test="params.statement_date != null">
+				DATE_FORMAT(statement_date,'%Y-%m') = DATE_FORMAT(#{params.statement_date},'%Y-%m')
+			</if>
+			<if test="params.where == 'calling_only'">
+				and record_type = #{params.record_type} OR billing_description = #{params.billing_description}
+			</if>
+			<if test="params.record_type != null">
+				and record_type = #{params.record_type}
+			</if>
+			<if test="params.billing_description != null">
+				and billing_description = #{params.billing_description}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectCustomerCallRecord" parameterType="CustomerCallRecord" resultType="CustomerCallRecord">
+		select * from tm_customer_call_record as ccr
+		<include refid="customerCallRecordWhere"/>
+		<if test="params.groupby != null">${params.groupby}</if>
+		<if test="params.orderby != null">${params.orderby}</if>
+	</select>
+	
+	<!-- select customerCallRecord page -->
+	<select id="selectCustomerCallRecordsByPage" parameterType="Page" resultMap="customerCallRecordResultMap">
+		select 
+			<include refid="customerCallRecordColumns"/>
+			from tm_customer_call_record as ccr
+			<include refid="customerCallRecordWhere"/>
+			<if test="params.orderby != null">${params.orderby}</if>
+			limit #{pageOffset}, #{pageSize}
+	</select>
+
+	<!-- select customerCallRecord amount -->
+	<select id="selectCustomerCallRecordsSum" parameterType="Page" resultType="int">
+		select count(*) from tm_customer_call_record as ccr
+		<include refid="customerCallRecordWhere"/>
+	</select>
+
+	<!-- select customerCallRecord by id -->
+	<select id="selectCustomerCallRecordById" parameterType="int" resultType="CustomerCallRecord">
+		select * from tm_customer_call_record where id = #{0}
+	</select>
+
+	<!-- // END SELECT AREA -->
+
+	<!-- =================================================================================== -->
+
+	<!-- INSERT AREA -->
+
+	<insert id="insertCustomerCallRecord" parameterType="CustomerCallRecord" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `tm_customer_call_record`(
+			`statement_date`, `record_type`, `clear_service_id`, `date_from`, `date_to`, `charge_date_time`
+			, `duration`, `oot_id`, `billing_description`
+			, `amount_excl`, `amount_incl`, `phone_called`, `juristiction`, `upload_date`, `invoice_id`
+		) VALUES (
+			#{statement_date},#{record_type},#{clear_service_id},#{date_from},#{date_to},#{charge_date_time}
+			,#{duration},#{oot_id},#{billing_description}
+			,#{amount_excl},#{amount_incl},#{phone_called},#{juristiction},#{upload_date},#{invoice_id}
+		)	
+	</insert>
+
+	<!-- // END INSERT AREA -->
+
+	<!-- =================================================================================== -->
+	
+	<!-- UPDATE AREA -->
+	
+	<!-- update customerCallRecord -->
+	<update id="updateCustomerCallRecord" parameterType="CustomerCallRecord">
+		update tm_customer_call_record
+		<set>
+			<if test="statement_date != null">statement_date = #{statement_date},</if>
+			<if test="record_type != null">record_type = #{record_type},</if>
+			<if test="clear_service_id != null">clear_service_id = #{clear_service_id},</if>
+			<if test="date_from != null">date_from = #{date_from},</if>
+			<if test="date_to != null">date_to = #{date_to},</if>
+			<if test="charge_date_time != null">charge_date_time = #{charge_date_time},</if>
+			<if test="duration != null">duration = #{duration},</if>
+			<if test="oot_id != null">oot_id = #{oot_id},</if>
+			<if test="billing_description != null">billing_description = #{billing_description},</if>
+			<if test="amount_excl != null">amount_excl = #{amount_excl},</if>
+			<if test="amount_incl != null">amount_incl = #{amount_incl},</if>
+			<if test="phone_called != null">phone_called = #{phone_called},</if>
+			<if test="juristiction != null">juristiction = #{juristiction},</if>
+			<if test="upload_date != null">upload_date = #{upload_date},</if>
+			<if test="invoice_id != null">invoice_id = #{invoice_id}</if>
+		</set>
+		<where>
+			<choose>
+				<when test="params.where == 'last_call_records'">
+					(record_type='T1' or record_type='T3')
+					and clear_service_id = #{params.clear_service_id}
+					and billing_description != 'Calling Numbers Presented - Minimum Charge'
+					<if test="params.invoice_id != null">
+						AND invoice_id = #{params.invoice_id}
+					</if>
+					<if test="params.invoice_id == null">
+						AND invoice_id IS NULL
+					</if>
+				</when>
+				<when test="params.where == 'last_rental_records'">
+					billing_description IN(
+						'Calling Numbers Presented - Minimum Charge',
+						'Call restrict with no Directory Access nat Res',
+						'Call restrict with directory access nat Res',
+						'Caller Display Monthly Charge per line Res',
+						'Call waiting nat Res',
+					  	'Faxability Monthly Rental Res',
+						'Smart Bundle package',
+						'3 Way Calls Service Res',
+						'Call Minder with Call Forward Res',
+						'Call Minder-Charges-Standard SME 2 (with TPS)',
+						'Calling Numbers Presented - Minimum Charge',
+						'directory assistance',
+						'FaxAbility-Charges SME1',
+						'FaxAbility-Charges SME2',
+						'Smartphone Services-Call waiting SME2',
+						'S-Phone Call divert (call fwd No ans) SME2',
+						'S-Phone Call divert (call fwd Immed) SME2',
+						'S-Phone Call Restrict with Directory Access SM',
+						'Wire Maintenance',
+						'wire maintenance contract',
+						'Voice chat'
+					)
+					AND clear_service_id = #{params.clear_service_id}
+					<if test="params.invoice_id != null">
+						AND invoice_id = #{params.invoice_id}
+					</if>
+					<if test="params.invoice_id == null">
+						AND invoice_id IS NULL
+					</if>
+				</when>
+				<otherwise>
+					<if test="params.id != null">id = #{params.id}</if>
+				</otherwise>
+			</choose>
+		</where>
+	</update>
+
+	<!-- // END UPDATE AREA -->
+
+	<!-- =================================================================================== -->
+
+	<!-- DELETE AREA -->
+	
+	<delete id="deleteCustomerCallRecord" parameterType="CustomerCallRecord">
+		DELETE FROM tm_customer_call_record
+		<where>
+			<if test="params.id != null">id = #{params.id}</if>
+			<if test="params.statement_date != null">and statement_date = #{params.statement_date}</if>
+			<if test="params.record_type != null">and record_type = #{params.record_type}</if>
+			<if test="params.clear_service_id != null">and clear_service_id = #{params.clear_service_id}</if>
+			<if test="params.date_from != null">and date_from = #{params.date_from}</if>
+			<if test="params.date_to != null">and date_to = #{params.date_to}</if>
+			<if test="params.charge_date_time != null">and charge_date_time = #{params.charge_date_time}</if>
+			<if test="params.duration != null">and duration = #{params.duration}</if>
+			<if test="params.oot_id != null">and oot_id = #{params.oot_id}</if>
+			<if test="params.billing_description != null">and billing_description = #{params.billing_description}</if>
+			<if test="params.amount_excl != null">and amount_excl = #{params.amount_excl}</if>
+			<if test="params.amount_incl != null">and amount_incl = #{params.amount_incl}</if>
+			<if test="params.phone_called != null">and phone_called = #{params.phone_called}</if>
+			<if test="params.juristiction != null">and juristiction = #{params.juristiction}</if>
+			<if test="params.upload_date != null">and upload_date = #{params.upload_date}</if>
+			<if test="params.invoice_id != null">and invoice_id = #{params.invoice_id}</if>
+		</where>
+	</delete>
+	
+	<!-- // END DELETE AREA -->
+
+</mapper>

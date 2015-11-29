@@ -1,0 +1,97 @@
+<div class="panel panel-success">
+	<div class="panel-body" style="padding-bottom:0;">
+		<div class="row">
+			<div class="col-md-2">
+				<span class="glyphicon glyphicon-map-marker" style="font-size: 36px;"></span>
+			</div>
+			<div class="col-md-10">
+				<p><.=customer_address.></p>
+				<p>
+					<a href="<.=ctx.>/broadband-user/crm/plans/address-check" class="btn btn-link" style="padding: 0;">Change Address</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="panel-body" style="padding-top:0;">
+		<div class="well" style="padding:8px; margin-bottom:0;">
+			<h4 class="text-success" style="font-weight:bold;margin-top:0;">
+			<.=plan.plan_name.>
+			</h4>
+			<.if (!naked) {.>
+			<p class="text-success" style="margin:0;">
+				<.if (select_customer_type == 'personal') {.>
+				+ Homeline included
+				<.} else if (select_customer_type == 'business') {.>
+				+ Businessline included
+				<.}.>
+			</p>
+			<.}.>
+			<.if (has_voip) {.>
+			<p class="text-success" style="margin:0;">
+				<.if (select_customer_type == 'personal') {.>
+				+ VoIP Homeline included
+				<.} else if (select_customer_type == 'business') {.>
+				+ VoIP Businessline included
+				<.}.>
+			</p>
+			<.}.>
+			<. if (modem_name != '') {.>
+			<p class="text-success" style="margin:0;">+ <.=modem_name.></p>
+			<.}.>
+			<. if (isContract) {.>
+			<p class="text-success" style="margin:0;">+ <.=contract_name.></p>
+			<.}.>
+			<p class="text-success" style="margin:0;">+ <.=order_broadband_type.></p>
+			<. if (discount_desc != '') {.>
+			<p class="text-success" style="margin:0;">+ <.=discount_desc.></p>
+			<.}.>
+			<hr style="margin:4px;">
+			<div class="row">
+				<div class="col-md-6">
+					<p class="bg-warning text-center text-warning" style="font-weight:bold;margin-bottom: 0;">Original</p>
+					<p class="bg-warning text-center text-warning" style="font-size: 30px;font-weight:bold;">
+						$ <.=(price.plan_price * prepay_months) + (price.service_price + price.save_service_price) + (price.modem_price + price.save_modem_price) + price.addons_price.>
+					</p>
+				</div>
+				<div class="col-md-6">
+					<p class="bg-success text-center text-success" style="font-weight:bold;margin-bottom: 0;">Save</p>
+					<p class="bg-success text-center text-success" style="font-size: 30px;font-weight:bold;">
+						$ <.=price.discount_price + price.save_service_price + price.save_modem_price + price.promotion_price.>
+					</p>
+				</div>
+			</div>
+			<hr style="margin:4px;">
+			<p class="text-danger text-center" > 
+				<span style="font-size: 36px;font-weight: bold;">
+					NZ$
+				</span>
+				<.if (select_customer_type == 'business') {.>
+				<span style="font-size: 52px;font-weight: bold;">
+				<.} else if (select_customer_type == 'personal') {.>
+				<span style="font-size: 54px;font-weight: bold;">
+				<.}.>
+					<.
+					var total = price.plan_price * prepay_months - price.discount_price + price.service_price + price.modem_price + price.addons_price;
+					var final_total = total - price.promotion_price;
+					.>
+					<.=final_total.>
+					<.if (select_customer_type == 'business') {.>
+					<span style="font-size: 12px;">+GST</span>
+					<.}.>
+				</span>
+			</p>
+			<a href="javascript:void(0);" class="btn btn-success btn-lg btn-block ladda-button" data-style="zoom-in" id="get-it-now">Get it Now</a>
+		</div>
+		<hr style="margin:4px;">
+		<ul>
+			<li>
+				<a href="<.=ctx.>/phone-calling-rates" target="_blank">Phone Standard Rates</a>
+			</li>
+			<li>
+				<a href="<.=ctx.>/voip-calling-rates" target="_blank">VoIP Standard Rates</a>
+			</li>
+		</ul>
+		
+		
+	</div>
+</div>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!-- import the dataSource definition -->
+	<import resource="datasource-config.xml" />
+
+	<!-- scanning package -->
+	<context:component-scan base-package="com.tm.broadband.service,com.tm.broadband.aop" />
+	
+	<!-- enable aop with @Aspect -->
+	<aop:aspectj-autoproxy />
+
+	<!-- enable autowire -->
+	<context:annotation-config />
+
+	<!-- transaction manager, use JtaTransactionManager for global tx -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="broadbandDataSource" />
+	</bean>
+
+	<!-- enable transaction demarcation with annotations -->
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+
+	<!-- define the SqlSessionFactory -->
+	<bean id="broadbandSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="broadbandDataSource" />
+		<property name="mapperLocations" value="classpath*:mappers/*.xml" />
+		<property name="typeAliasesPackage" value="com.tm.broadband.model" />
+	</bean>
+
+	<!-- scanning mapper xml -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="sqlSessionFactoryBeanName" value="broadbandSqlSessionFactory" />
+		<property name="basePackage" value="com.tm.broadband.mapper" />
+	</bean>
+	
+	<!-- transaction manager, use JtaTransactionManager for global tx -->
+	<bean id="radiusTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="radiusDataSource" />
+	</bean>
+
+	<!-- enable transaction demarcation with annotations -->
+	<tx:annotation-driven transaction-manager="radiusTransactionManager" proxy-target-class="true" />
+	
+	<!-- define the SqlSessionFactory -->
+	<bean id="radiusSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="radiusDataSource" />
+		<property name="mapperLocations" value="classpath*:mappers/*.xml" />
+		<property name="typeAliasesPackage" value="com.tm.broadband.model" />
+	</bean>
+
+	<!-- scanning mapper xml -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="sqlSessionFactoryBeanName" value="radiusSqlSessionFactory" />
+		<property name="basePackage" value="com.tm.broadband.mapper" />
+	</bean>
+
+
+	<!-- ============================================================================= -->
+	
+	<!-- job注册 -->
+	<bean id="jobRegistry" class="org.springframework.batch.core.configuration.support.MapJobRegistry" />
+		
+	<!-- job注册对象管理？？？ -->
+	<bean class="org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor">
+		<property name="jobRegistry" ref="jobRegistry" />
+	</bean>
+	
+	<!-- job数据库持久化  对象  -->
+	<bean id="jobRepository" class="org.springframework.batch.core.repository.support.JobRepositoryFactoryBean"
+		p:isolationLevelForCreate="ISOLATION_SERIALIZABLE" p:dataSource-ref="broadbandDataSource"
+		p:transactionManager-ref="transactionManager" />
+		
+	<!-- job启动 对象 -->
+	<bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<property name="jobRepository" ref="jobRepository" />
+	</bean>
+	
+    <import resource="importRadiusRadacctJob.xml"/>
+    
+     <!-- ============================================================================= -->
+    
+     <!-- loading email setting -->
+	<import resource="email-setting.xml"/>
+	
+	<!-- loading quartz setting -->
+	<import resource="quartz-setting.xml"/>
+
+
+</beans>

@@ -1,0 +1,213 @@
+@CHARSET "UTF-8";
+
+html {
+	background-color: #222;
+	border-color: #080808;
+	height: 100%;
+}
+
+body {
+	padding-bottom: 0;
+}
+
+#scrollUp {
+	bottom: 20px;
+	right: 20px;
+	height: 38px;
+	width: 38px;
+	background: url("../images/top.png") no-repeat;
+}
+
+.logo {
+	display: inline-block;
+	height: 46px;
+	width: 111px;
+	background: url("../images/logo.png") no-repeat;
+	margin-top: -12px;
+	background-size: contain;
+}
+
+#navhead {
+	margin-bottom: 20px;
+}
+
+.customer-panel-height {
+	min-height: 500px;
+}
+
+.popover-content {
+	width: 250px;
+}
+
+.cyberpark-home-bg {
+	background: url("../images/cyberpark_home_bg.jpg");
+}
+
+.cyberpark-home-bg img {
+	margin: 0 auto;
+	padding: 60px 10px 30px;
+}
+
+.cyberpark-home-bg a {
+	margin: 0 auto;
+}
+
+@media ( min-width : 768px) .bs-docs-masthead {
+	padding
+	:
+	 
+	80
+	px
+	 
+	0;
+}
+
+@media ( min-width : 768px) .bs-docs-header {
+	padding-top
+	:
+	 
+	60
+	px
+	;
+	
+
+	padding-bottom
+	:
+	 
+	60
+	px
+	;
+	
+
+	font-size
+	:
+	 
+	24
+	px
+	;
+	
+
+	text-align
+	:
+	 
+	left
+	;
+	
+
+}
+
+.bs-docs-header {
+	margin-bottom: 40px;
+	font-size: 20px;
+	position: relative;
+	padding: 30px 15px;
+	color: #fff;
+	text-align: center;
+	text-shadow: 0 1px 0 rgba(0, 0, 0, .1);
+}
+
+.bs-docs-masthead, .bs-docs-booticon {
+	margin: 0 auto 30px;
+}
+
+.bs-docs-booticon-outline {
+	background-color: transparent;
+	border: 1px solid #cdbfe3;
+}
+
+.bs-docs-booticon-lg {
+	font-size: 108px;
+	line-height: 140px;
+}
+
+.bs-docs-booticon {
+	display: block;
+	font-weight: 500;
+	color: #fff;
+	text-align: center;
+	cursor: default;
+	background-color: #563d7c;
+	border-radius: 1%;
+}
+
+.btn-outline-inverse {
+	color: #fff;
+	background-color: transparent;
+	border-color: #fff;
+}
+
+.btn-outline-inverse:hover, .btn-outline-inverse:focus,
+	.btn-outline-inverse:active {
+	color: #03764b;
+	text-shadow: none;
+	background-color: #fff;
+	border-color: #fff;
+}
+
+a[title="Facebook"]:hover img, a[title="Twitter"]:hover img, a[title="Google Plus"]:hover img,
+	a[title="YouTube"]:hover img {
+	opacity: 1;
+}
+
+a[title="Facebook"] img, a[title="Twitter"] img, a[title="Google Plus"] img,
+	a[title="YouTube"] img {
+	opacity: 0.5;
+}
+
+a[title="adsl"] img, a[title="vdsl"] img, a[title="ufb"] img, a[title="topup"] img
+	{
+	opacity: 0.7;
+}
+
+a[title="adsl"]:hover img, a[title="vdsl"]:hover img, a[title="ufb"]:hover img,
+	a[title="topup"]:hover img {
+	opacity: 1;
+}
+
+.phone {
+	display: inline-block;
+	width: 25px;
+	height: 25px;
+	background: url("../images/phone.png") no-repeat;
+	background-size: contain;
+	margin-bottom: -5px;
+}
+
+.without_phone {
+	display: inline-block;
+	width: 25px;
+	height: 25px;
+	background: url("../images/without_phone.png") no-repeat;
+	background-size: contain;
+	margin-bottom: -5px;
+}
+
+.carbonad {
+	padding: 20px;
+	background: rgba(0, 0, 0, .4) !important;
+	border: 0 !important;
+	border-radius: 4px;
+}
+
+.cyberpark-home-bottom {
+	height: 70px;
+	background: url("../images/cyberpark-home-bottom.png");
+	background-size: contain;
+}
+
+.btn-purple:hover {
+	color: #fff;
+	background-color: #5a4080;
+	border-color: #5a4080;
+}
+
+.btn-purple {
+	color: #fff;
+	background-color: #7d64a1;
+	border-color: #7d64a1;
+}
+
+.follow-us-on{
+	padding:3px 20px;
+	display:block;
+}
