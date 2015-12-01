@@ -152,7 +152,7 @@ public class OnsitePDFCreator extends ITextUtils {
     	// END ORDER CONFIRMATION AREA PADDING TOP
 
         // BEGIN ORDER CONFIRMATION TITLE
-        addPDFTitle(orderPDFTitleTable, "DISPATCH LIST ( "+this.getCoo().getOnsite_type()+" )", ITextFont.arial_coral_bold_18, 22F, PdfPCell.BOTTOM, PdfPCell.ALIGN_RIGHT, 14);
+        addPDFTitle(orderPDFTitleTable, "DISPATCH LIST ( "+this.getCoo().getOnsite_type()+" )", ITextFont.arial_colored_bold_18, 22F, PdfPCell.BOTTOM, PdfPCell.ALIGN_RIGHT, 14);
 //        addPDFTitle(orderPDFTitleTable, "CONFIRMATION", ITextFont.arial_colored_bold_23, 22F, PdfPCell.BOTTOM, PdfPCell.ALIGN_RIGHT, 14);
         // END ORDER CONFIRMATION TITLE
         
@@ -373,13 +373,13 @@ public class OnsitePDFCreator extends ITextUtils {
 	                addCol(orderDetailTable, " ", 2, 0F, null, 0F, 0F, null);
 	                addCol(orderDetailTable, String.valueOf(TMUtils.fillDecimalPeriod(String.valueOf(cood.getPrice()))), 1, 0F, ITextFont.arial_normal_8, contentPaddingTop, contentPaddingBottom, PdfPCell.ALIGN_CENTER);
 	                addCol(orderDetailTable, String.valueOf(cood.getUnit()), 1, 0F, ITextFont.arial_normal_8, contentPaddingTop, contentPaddingBottom, PdfPCell.ALIGN_CENTER);
-                    addCol(orderDetailTable, String.valueOf(cood.getPrice()!=null && cood.getPrice()<=0 ? "FREE" : TMUtils.fillDecimalPeriod(String.valueOf(price.multiply(unit).doubleValue()))), 1, 0F, cood.getPrice()!=null && cood.getPrice()<=0 ? ITextFont.arial_bold_italic_10 : ITextFont.arial_normal_8, contentPaddingTop, contentPaddingBottom, PdfPCell.ALIGN_RIGHT);
+                    addCol(orderDetailTable, String.valueOf(cood.getPrice()!=null && cood.getPrice()<=0 ? "FREE" : TMUtils.fillDecimalPeriod(String.valueOf(price.multiply(unit).doubleValue()))), 1, 0F, cood.getPrice()!=null && cood.getPrice()<=0 ? ITextFont.arial_bold_10 : ITextFont.arial_normal_8, contentPaddingTop, contentPaddingBottom, PdfPCell.ALIGN_RIGHT);
                 } else {
 	                addColBottomBorder(orderDetailTable, cood.getName(), 5, firstColIndent, ITextFont.arial_normal_8, contentPaddingTop, contentPaddingBottom, PdfPCell.ALIGN_LEFT, borderColor);
 	                addColBottomBorder(orderDetailTable, " ", 2, 0F, null, 0F, 0F, null, borderColor);
 	                addColBottomBorder(orderDetailTable, String.valueOf(TMUtils.fillDecimalPeriod(String.valueOf(cood.getPrice()))), 1, 0F, ITextFont.arial_normal_8, contentPaddingTop, contentPaddingBottom, PdfPCell.ALIGN_CENTER, borderColor);
 	                addColBottomBorder(orderDetailTable, String.valueOf(cood.getUnit()), 1, 0F, ITextFont.arial_normal_8, contentPaddingTop, contentPaddingBottom, PdfPCell.ALIGN_CENTER, borderColor);
-                    addColBottomBorder(orderDetailTable, String.valueOf(cood.getPrice()!=null && cood.getPrice()<=0 ? "FREE" : TMUtils.fillDecimalPeriod(String.valueOf(price.multiply(unit).doubleValue()))), 1, 0F, cood.getPrice()!=null && cood.getPrice()<=0 ? ITextFont.arial_bold_italic_10 : ITextFont.arial_normal_8, contentPaddingTop, contentPaddingBottom, PdfPCell.ALIGN_RIGHT, borderColor);	
+                    addColBottomBorder(orderDetailTable, String.valueOf(cood.getPrice()!=null && cood.getPrice()<=0 ? "FREE" : TMUtils.fillDecimalPeriod(String.valueOf(price.multiply(unit).doubleValue()))), 1, 0F, cood.getPrice()!=null && cood.getPrice()<=0 ? ITextFont.arial_bold_10 : ITextFont.arial_normal_8, contentPaddingTop, contentPaddingBottom, PdfPCell.ALIGN_RIGHT, borderColor);	
                 }
                 // END ADD ON ROWS
                 
@@ -482,7 +482,7 @@ public class OnsitePDFCreator extends ITextUtils {
         addEmptyCol(onsiteDescriptionTable, 24F, 14);
     	// END CUSTOMER BASIC INFO PADDING TOP
 
-        addCol(onsiteDescriptionTable, "Description").colspan(2).font(ITextFont.arial_coral_bold_11).paddingTo("b", 4f).borderColor(new BaseColor(240,128,128)).border("b", 1F).o();
+        addCol(onsiteDescriptionTable, "Description").colspan(2).font(ITextFont.arial_bold_10).paddingTo("b", 4f).borderColor(new BaseColor(240,128,128)).border("b", 1F).o();
         addCol(onsiteDescriptionTable, "").colspan(12).o();
         addCol(onsiteDescriptionTable, this.getCoo().getOnsite_description()).colspan(14).font(ITextFont.arial_normal_8).paddingTo("b", 4f).indent(20F).fixedHeight(100F).o();
         
@@ -501,31 +501,31 @@ public class OnsitePDFCreator extends ITextUtils {
         addEmptyCol(onsiteChecklistTable, 14F, 14);
     	// END ONSITE CHECKLIST INFO PADDING TOP
 
-        addCol(onsiteChecklistTable, "Checklist").colspan(2).font(ITextFont.arial_coral_bold_11).paddingTo("b", 4f).borderColor(new BaseColor(240,128,128)).border("b", 1F).o();
+        addCol(onsiteChecklistTable, "Checklist").colspan(2).font(ITextFont.arial_bold_10).paddingTo("b", 4f).borderColor(new BaseColor(240,128,128)).border("b", 1F).o();
         addCol(onsiteChecklistTable, "").colspan(12).o();
         addCol(onsiteChecklistTable, this.getCoo().getOnsite_description()).colspan(14).font(ITextFont.arial_normal_8).paddingTo("b", 4f).indent(20F).o();
 
         addEmptyCol(onsiteChecklistTable, 4F, 14);
         
-        addCol(onsiteChecklistTable, "1、 Check Cable Connection").colspan(14).font(ITextFont.arial_bold_8).border(1F).paddingV(4F).o();
-        addCol(onsiteChecklistTable, "1. Check Jackpot, Filter, ADSL Connection (   )").colspan(7).font(ITextFont.arial_normal_7).border(1F).paddingV(2F).o();
-        addCol(onsiteChecklistTable, "2. Check Phoneline Connection / VoIP Connection (   )").colspan(7).font(ITextFont.arial_normal_7).border(1F).paddingV(3F).o();
+        addCol(onsiteChecklistTable, "1、 Check Cable Connection").colspan(14).font(ITextFont.arial_bold_8).border(1).paddingV(4F).o();
+        addCol(onsiteChecklistTable, "1. Check Jackpot, Filter, ADSL Connection (   )").colspan(7).font(ITextFont.arial_normal_7).border(1).paddingV(2F).o();
+        addCol(onsiteChecklistTable, "2. Check Phoneline Connection / VoIP Connection (   )").colspan(7).font(ITextFont.arial_normal_7).border(1).paddingV(3F).o();
 
-        addCol(onsiteChecklistTable, "2、 Check Router Configuration").colspan(14).font(ITextFont.arial_bold_8).border(1F).paddingV(4F).borderWidth("t", 0F).o();
-        addCol(onsiteChecklistTable, "1、 WAN (   )").colspan(2).font(ITextFont.arial_normal_7).border(1F).paddingV(3F).o();
-        addCol(onsiteChecklistTable, "2、Wifi (   )").colspan(2).font(ITextFont.arial_normal_7).border(1F).paddingV(3F).o();
-        addCol(onsiteChecklistTable, "3、 VoIP (   )").colspan(2).font(ITextFont.arial_normal_7).border(1F).paddingV(3F).o();
-        addCol(onsiteChecklistTable, "4、 Remote Support (   )").colspan(2).font(ITextFont.arial_normal_7).border(1F).paddingV(3F).o();
-        addCol(onsiteChecklistTable, "5、 Check Light (   )").colspan(6).font(ITextFont.arial_normal_7).border(1F).paddingV(3F).o();
+        addCol(onsiteChecklistTable, "2、 Check Router Configuration").colspan(14).font(ITextFont.arial_bold_8).border(1).paddingV(4F).borderWidth("t", 0F).o();
+        addCol(onsiteChecklistTable, "1、 WAN (   )").colspan(2).font(ITextFont.arial_normal_7).border(1).paddingV(3F).o();
+        addCol(onsiteChecklistTable, "2、Wifi (   )").colspan(2).font(ITextFont.arial_normal_7).border(1).paddingV(3F).o();
+        addCol(onsiteChecklistTable, "3、 VoIP (   )").colspan(2).font(ITextFont.arial_normal_7).border(1).paddingV(3F).o();
+        addCol(onsiteChecklistTable, "4、 Remote Support (   )").colspan(2).font(ITextFont.arial_normal_7).border(1).paddingV(3F).o();
+        addCol(onsiteChecklistTable, "5、 Check Light (   )").colspan(6).font(ITextFont.arial_normal_7).border(1).paddingV(3F).o();
 
-        addCol(onsiteChecklistTable, "3、 Check VoIP Number On VOS (Optional)").colspan(14).font(ITextFont.arial_bold_8).border(1F).paddingV(4F).borderWidth("t", 0F).o();
-        addCol(onsiteChecklistTable, "1、 Check Balance (   )").colspan(3).font(ITextFont.arial_normal_7).border(1F).paddingV(3F).o();
-        addCol(onsiteChecklistTable, "2、 Check CallRate (   )").colspan(3).font(ITextFont.arial_normal_7).border(1F).paddingV(3F).o();
-        addCol(onsiteChecklistTable, "3、 Check Advaned Setting (   )").colspan(3).font(ITextFont.arial_normal_7).border(1F).paddingV(3F).o();
-        addCol(onsiteChecklistTable, "4、 Check Prefix (   )").colspan(5).font(ITextFont.arial_normal_7).border(1F).paddingV(3F).o();
+        addCol(onsiteChecklistTable, "3、 Check VoIP Number On VOS (Optional)").colspan(14).font(ITextFont.arial_bold_8).border(1).paddingV(4F).borderWidth("t", 0F).o();
+        addCol(onsiteChecklistTable, "1、 Check Balance (   )").colspan(3).font(ITextFont.arial_normal_7).border(1).paddingV(3F).o();
+        addCol(onsiteChecklistTable, "2、 Check CallRate (   )").colspan(3).font(ITextFont.arial_normal_7).border(1).paddingV(3F).o();
+        addCol(onsiteChecklistTable, "3、 Check Advaned Setting (   )").colspan(3).font(ITextFont.arial_normal_7).border(1).paddingV(3F).o();
+        addCol(onsiteChecklistTable, "4、 Check Prefix (   )").colspan(5).font(ITextFont.arial_normal_7).border(1).paddingV(3F).o();
 
-        addCol(onsiteChecklistTable, "4、 Check Test").colspan(14).font(ITextFont.arial_bold_8).border(1F).paddingV(4F).borderWidth("t", 0F).o();
-        addCol(onsiteChecklistTable, "1、 Test Phone / VoIP / Wifi / Wired Speed (   )").colspan(14).font(ITextFont.arial_normal_7).border(1F).paddingV(3F).o();
+        addCol(onsiteChecklistTable, "4、 Check Test").colspan(14).font(ITextFont.arial_bold_8).border(1).paddingV(4F).borderWidth("t", 0F).o();
+        addCol(onsiteChecklistTable, "1、 Test Phone / VoIP / Wifi / Wired Speed (   )").colspan(14).font(ITextFont.arial_normal_7).border(1).paddingV(3F).o();
         
         return onsiteChecklistTable;
 	}

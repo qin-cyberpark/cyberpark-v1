@@ -38,6 +38,6 @@
 	<bean id="dataImportRadacctWriter" class="org.mybatis.spring.batch.MyBatisBatchItemWriter">
 		<property name="sqlSessionFactory" ref="broadbandSqlSessionFactory" />
   		<property name="statementId" value="insertTempDateUsage" />
-	</bean>
-	
+	</bean>	
+
 </beans>

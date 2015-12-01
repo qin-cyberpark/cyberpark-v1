@@ -97,7 +97,9 @@
 	<import resource="email-setting.xml"/>
 	
 	<!-- loading quartz setting -->
-	<import resource="quartz-setting.xml"/>
+	<!--   import resource="quartz-setting.xml"/-->
+	
+	<context:property-placeholder location="classpath:spring/application.properties" ignore-unresolvable="true"/>
 
 
 </beans>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+	<classPathEntry location="C:\Users\Qin\.m2\repository\mysql\mysql-connector-java\5.1.26\mysql-connector-java-5.1.26.jar" />
+	<context id="MyBatis3Simple" targetRuntime="MyBatis3Simple">
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://localhost:3306/broadband" userId="root"
+			password="" />
+
+		<javaModelGenerator targetPackage="com.tm.broadband.model" targetProject="broadband" />
+		
+		<sqlMapGenerator targetPackage="resource.mappers"
+			targetProject="broadband" />
+		
+		<javaClientGenerator targetPackage="com.tm.broadband.mapper"
+			targetProject="broadband" type="XMLMAPPER" />
+
+		
+		<!-- table tableName="t_uploaded_file" domainObjectName="UploadedFile"/ -->
+		<table tableName="t_calling_record" domainObjectName="CallingRecord"/>
+		<table tableName="t_addon_service_record" domainObjectName="AddonServiceRecord"/>
+	</context>
+</generatorConfiguration>

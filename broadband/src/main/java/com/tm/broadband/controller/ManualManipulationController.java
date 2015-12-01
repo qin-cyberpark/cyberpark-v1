@@ -354,5 +354,4 @@ public class ManualManipulationController {
 		return "redirect:/broadband-user/manual-manipulation/vos-voip-call-rate/view/" + pageNo ;
 	}
 	// END VOSVoIPRate
-	
 }

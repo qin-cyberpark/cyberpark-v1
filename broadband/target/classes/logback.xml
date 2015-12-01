@@ -9,7 +9,7 @@
 
 	<appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>D:/works/CyberPark/legacy/deployment/logs/broadband.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<fileNamePattern>D:/works/CyberPark/ver1/deployment/logs/broadband.%d{yyyy-MM-dd}.log</fileNamePattern>
 			<maxHistory>30</maxHistory>
 		</rollingPolicy>
 		<encoder>

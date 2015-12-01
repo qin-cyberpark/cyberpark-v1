@@ -706,4 +706,23 @@ public class TMUtils {
 		return finalChargeFee;
 	}
 	// END Rental Charge Fee
+	
+	// BEGIN get extension
+	public static String getExtension(String fileName){
+		if (fileName == null) {
+            return null;
+        }
+        int extensionPos = fileName.lastIndexOf('.');
+        int lastUnixPos = fileName.lastIndexOf('/');
+        int lastWindowsPos = fileName.lastIndexOf('\\');
+        int lastSeparator = Math.max(lastUnixPos, lastWindowsPos);
+ 
+        int index = lastSeparator > extensionPos ? -1 : extensionPos;
+        if (index == -1) {
+            return "";
+        } else {
+            return fileName.substring(index);
+        }
+	}
+	// END get file extension
 }
